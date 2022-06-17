@@ -1,0 +1,240 @@
+.issues {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  padding-top: 182px;
+  transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  opacity: 1;
+  &.therapist {
+    padding-top: 140px;
+  }
+
+  &__container {
+    max-width: 1440px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__wrapper {
+    overflow: 'hidden';
+  }
+
+  &__vector {
+    display: none;
+  }
+
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 110%;
+    color: #222426;
+    margin-bottom: 16px;
+
+    transition: 1.5s transform ease;
+    transform-origin: bottom left;
+  }
+  &__text {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 150%;
+    color: #222426;
+
+    opacity: 0.8;
+    max-width: 604px;
+    transition: 0.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s;
+  }
+  .button {
+    width: 172px;
+    height: 56px;
+    transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s;
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    .button {
+      margin-top: 16px;
+    }
+  }
+
+  &__list {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  &__item {
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 56px;
+    width: calc(100% / 3 - 40px);
+    position: relative;
+
+    &-vector {
+      position: absolute;
+      top: -18px;
+      left: -8px;
+      transition: 0.3s ease-out transform, 0.3s ease-out opacity;
+      path {
+        fill: #eae6dd;
+      }
+    }
+    &-title {
+      z-index: 1;
+      position: relative;
+      font-family: 'MADE Mirage';
+      font-style: normal;
+      font-weight: 500;
+      font-size: 24px;
+      line-height: 150%;
+
+      text-transform: uppercase;
+      color: #222426;
+      margin-bottom: 8px;
+      height: 72px;
+    }
+    &-text {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 160%;
+
+      color: #222426;
+      margin-bottom: 16px;
+      z-index: 1;
+      position: relative;
+    }
+    &-arrow {
+      transition: 0.3s ease-out transform;
+    }
+
+    &:hover {
+      .issues__item-vector {
+        transform: scale(2.7) translate(24px, 16px);
+        path {
+          fill: #c1f4f3;
+        }
+      }
+      .issues__item-arrow {
+        transform: translate(16px, 0);
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &__title {
+      font-size: 48px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    &__item {
+      width: calc(100% / 2 - 40px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding-top: 64px;
+    &.therapist {
+      padding-top: 64px;
+    }
+    .button {
+      margin: 32px auto 0;
+      transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    }
+
+    &__text {
+      font-size: 16px;
+    }
+    &__title {
+      font-size: 30px;
+    }
+
+    &__item-title {
+      height: auto;
+    }
+  }
+
+  @media (max-width: 600px) {
+    &__list {
+      flex-direction: column;
+    }
+    &__item {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    &__container {
+      width: calc(100%);
+      position: relative;
+      z-index: 1;
+    }
+    &__vector {
+      display: block;
+      position: absolute;
+      top: 24px;
+      right: -16px;
+      transition: 2.5s linear transform;
+    }
+    .button {
+      height: 48px;
+      width: 250px;
+    }
+    &__item-title {
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 150%;
+      height: auto;
+      width: 100%;
+    }
+    &__item {
+      margin-top: 32px;
+    }
+  }
+
+  &.service-page {
+    margin-top: 0;
+    padding-top: 140px;
+    .issues__item-vector {
+      path {
+        fill: #eae6dd;
+      }
+    }
+    .issues__item {
+      &:hover {
+        .issues__item-vector {
+          path {
+            fill: #c1f4f3;
+          }
+        }
+      }
+    }
+    .issues__vector {
+      display: block;
+      display: block;
+      position: absolute;
+      top: 24px;
+      left: -130px;
+      width: 664px;
+      height: 833px;
+
+      @media (min-width: 1440px) {
+        left: -185px;
+      }
+      transition: 3s linear transform;
+    }
+
+    @media (max-width: 480px) {
+      .issues__vector {
+        display: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,429 @@
+.therapists {
+  padding-top: 140px;
+  transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  opacity: 0;
+  position: relative;
+  z-index: 1;
+  &.animated {
+    opacity: 1;
+  }
+
+  &__container {
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 110%;
+    color: #222426;
+    margin-bottom: 40px;
+    transition: 1.5s transform ease;
+    transform-origin: bottom left;
+    transform: rotate(-10deg) translate(0, -130%);
+    &.animated {
+      transform: rotate(0) translate3d(0, 0%, 0);
+    }
+    display: flex;
+  }
+
+  &__vector {
+    display: none;
+  }
+
+  &__container.one {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__text {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 150%;
+    color: #222426;
+
+    opacity: 0.8;
+    max-width: 522px;
+    transform: translateY(-140%);
+    transition: 0.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s;
+    &.animated {
+      transform: translateY(0);
+    }
+  }
+
+  &__list {
+    display: flex;
+    overflow: hidden;
+    @media (min-width: 1440px) {
+      margin-right: -80px;
+    }
+    margin-right: -16px;
+
+    .slider {
+      overflow: hidden;
+      .button {
+        margin-right: 0;
+        position: absolute;
+
+        @media (min-width: 1440px) {
+          right: 80px;
+        }
+        right: 16px;
+      }
+
+      &__bottom {
+        position: relative;
+        justify-content: center;
+      }
+    }
+  }
+
+  &__more {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 120%;
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s ease-in-out color;
+
+    svg {
+      margin-left: 8px;
+      path {
+        transition: 0.3s ease-in-out stroke;
+      }
+    }
+
+    &:hover {
+      color: #0033cc;
+      path {
+        stroke: #0033cc;
+      }
+    }
+  }
+
+  &__bottom {
+    display: flex;
+    align-items: center;
+    margin-top: 56px;
+    opacity: 0;
+    transition: 0.3s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.6s;
+    &.animated {
+      opacity: 1;
+    }
+  }
+
+  .button {
+    width: 196px;
+    height: 56px;
+    margin-right: 15px;
+  }
+
+  &__item {
+    border: 1px solid #222426;
+
+    &-img {
+      position: relative;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &::after {
+        content: '';
+        background: #c4c4c4;
+        opacity: 0.1;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+
+    &-info {
+      padding: 20px 24px;
+    }
+    &-title {
+      font-family: 'MADE Mirage';
+      font-style: normal;
+      font-weight: 500;
+      font-size: 32px;
+      line-height: 130%;
+
+      text-transform: uppercase;
+      color: #222426;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    &-text {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 160%;
+      color: #222426;
+      opacity: 0.8;
+    }
+  }
+
+  &__item.big {
+    width: 414px;
+    min-width: 414px;
+    margin-right: 123px;
+    text-decoration: none;
+  }
+
+  &__item-img {
+    overflow: hidden;
+  }
+
+  &__item.small {
+    width: 305px;
+    text-decoration: none;
+
+    min-width: 305px;
+    margin-right: 20px;
+    .therapists__item-info {
+      padding: 16px 24px;
+    }
+    .therapists__item-title {
+      font-weight: 500;
+      font-size: 24px;
+      line-height: 150%;
+      margin-bottom: 0;
+    }
+    .therapists__item-text {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 160%;
+    }
+
+    img {
+      transition: 0.5s transform ease;
+    }
+    &:hover {
+      .therapists__item-img {
+        img {
+          transform: scale(1.04);
+        }
+      }
+    }
+    opacity: 0;
+    transition: 0.2s all ease-in;
+    &.animated {
+      opacity: 1;
+    }
+  }
+
+  &__item-rating {
+    display: flex;
+    margin-top: 8.5px;
+    svg {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      &:last-child {
+        margin-right: 8px;
+      }
+    }
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 140%;
+    opacity: 0.8;
+  }
+
+  &__container.two {
+    overflow-y: clip;
+    .therapists__title {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 16px;
+      justify-content: center;
+      transform: rotate(-10deg) translate(0, -130%);
+      &.animated {
+        transform: rotate(0) translate3d(0, 0%, 0);
+      }
+    }
+    .therapists__text {
+      text-align: center;
+      max-width: 665px;
+      margin-bottom: 52px;
+    }
+  }
+
+  @media (max-width: 1120px) {
+    &__item.big {
+      margin-right: 48px;
+    }
+  }
+  @media (max-width: 1024px) {
+    &__title {
+      font-size: 48px;
+    }
+    &__text {
+      font-size: 16px;
+      max-width: 404px;
+    }
+    &__item.big {
+      width: 330px;
+      min-width: 330px;
+      margin-right: 48px;
+    }
+    &__item.small {
+      width: 245px;
+      min-width: 245px;
+      margin-right: 8px;
+    }
+    &__item {
+      &-info {
+        padding: 16px 20px;
+      }
+      &-text {
+        font-size: 16px;
+      }
+      &-title {
+        font-size: 24px;
+      }
+
+      &.small {
+        .therapists__item-title {
+          font-size: 18px;
+          line-height: 150%;
+        }
+        .therapists__item-text {
+          font-weight: 400;
+          font-size: 12px;
+          line-height: 140%;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 900px) {
+    &__list {
+      .slider__bottom {
+        flex-direction: column;
+
+        .button {
+          position: relative;
+          right: auto;
+          margin: 32px auto 0;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding-top: 64px;
+    &__title {
+      font-size: 30px;
+      text-align: center;
+      margin-bottom: 24px;
+      
+    }
+    &__text {
+      text-align: center;
+      margin-top: 24px;
+      max-width: none;
+      width: 86%;
+    }
+    &__container.one {
+      flex-direction: column;
+    }
+
+    &__container.two {
+      .therapists__title {
+        margin-bottom: 0;
+        text-align: left;
+        justify-content: flex-start;
+      }
+      .therapists__text {
+        margin: 8px 0 32px;
+        text-align: left;
+        width: 100%;
+      }
+    }
+    &__block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    &__bottom {
+      margin-top: 32px;
+    }
+    &__item {
+      &.big {
+        margin-right: 0;
+        width: 328px;
+        min-width: 328px;
+      }
+      &-info {
+        padding: 24px;
+      }
+      &-text {
+        font-size: 14px;
+      }
+      &-title {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    &__bottom {
+      flex-direction: column;
+    }
+    position: relative;
+    z-index: 0;
+
+    &__vector {
+      display: block;
+      position: absolute;
+      z-index: 0;
+      top: -200px;
+      left: -250px;
+      transform: rotateY(180deg);
+      transition: 2.5s linear transform;
+    }
+
+    &__text {
+      width: 93%;
+    }
+
+    &__item.small {
+      .therapists__item-info {
+        padding: 16px 24px;
+      }
+    }
+
+    &__more {
+      margin-top: 25px;
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 120%;
+    }
+  }
+
+  @media (max-width: 375px) {
+    &__item.big {
+      width: 100%;
+      min-width: auto;
+    }
+  }
+}

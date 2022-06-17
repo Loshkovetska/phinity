@@ -1,0 +1,124 @@
+.services-block {
+  padding-top: 140px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+
+  &.issue {
+    padding-top: 100px;
+  }
+  &.therapist {
+    padding-top: 120px;
+  }
+  &__container {
+    width: 100%;
+    height: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 110%;
+    color: #222426;
+    margin-bottom: 40px;
+    transition: 1.5s transform ease;
+
+  }
+
+  &__vector {
+    display: none;
+    position: absolute;
+    top: 100;
+    right: -16px;
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(6, 197px);
+    justify-content: space-between;
+    grid-row-gap: 32px;
+    grid-column-gap: 20px;
+    position: relative;
+  }
+
+  @media (max-width: 1320px) {
+    &__list {
+      grid-template-columns: repeat(5, 197px);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &__title {
+      font-size: 48px;
+    }
+    &__list {
+      grid-template-columns: repeat(4, 197px);
+    }
+  }
+  @media (max-width: 850px) {
+    &__list {
+      grid-template-columns: repeat(3, 197px);
+    }
+  }
+  @media (max-width: 768px) {
+    padding-top: 64px;
+    &.issue {
+      padding-top: 64px;
+    }
+    &.therapist {
+      padding-top: 64px;
+    }
+    &__title {
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 120%;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    &__list {
+      grid-template-columns: repeat(4, 160px);
+      grid-row-gap: 16px;
+      grid-column-gap: 8px;
+
+      transition: 0.5s ease-in opacity;
+      opacity: 0;
+
+      &.animated {
+        opacity: 1;
+      }
+    }
+
+    &__vector {
+      display: block;
+      transition: 2.5s linear transform;
+    }
+  }
+  @media (max-width: 700px) {
+    &__list {
+      grid-template-columns: repeat(3, 160px);
+      grid-row-gap: 16px;
+      grid-column-gap: 8px;
+    }
+  }
+  @media (max-width: 550px) {
+    &__list {
+      grid-template-columns: repeat(2, 160px);
+      grid-row-gap: 16px;
+      grid-column-gap: 8px;
+      justify-content: center;
+    }
+  }
+  @media (max-width: 350px) {
+    &__list {
+      grid-template-columns: repeat(2, 50%);
+      grid-row-gap: 16px;
+      grid-column-gap: 8px;
+    }
+  }
+}

@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes,Navigate } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { observer } from 'mobx-react'
+import routes from './routes'
+import './styles/index.scss'
+import NotFound from './pages/404'
 
-function App() {
+const App = observer(() => {
+  const headerContent = useRef(null)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <Router>
+      <div ref={headerContent}></div>
+      <Routes>
+        <Route path="/404" element={<NotFound />} />
+        {routes.map((route, idx) => (
+          <Route key={idx} path={route.path} element={route.component} />
+        ))}
+        <Route path="*" element={<Navigate to="/404" />} />
+      </Routes>
+    </Router>
+  )
+})
 
-export default App;
+export default App

@@ -1,0 +1,222 @@
+.reviews {
+  width: 100%;
+  padding-top: 140px;
+  position: relative;
+  z-index: 1;
+  transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
+  opacity: 0;
+  margin: 0 auto;
+  &.animated {
+    opacity: 1;
+  }
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 110%;
+    text-align: center;
+    color: #222426;
+    margin-bottom: 20px;
+    transition: 1.5s transform ease;
+    transform-origin: bottom left;
+    transform: rotate(-10deg) translate3d(0, -130%, 0);
+    &.animated {
+      transform: rotate(0) translate3d(0, 0%, 0);
+    }
+    max-width: 846px;
+    min-width: 846px;
+    margin: 0 auto 20px;
+  }
+
+  &__text {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 150%;
+    text-align: center;
+    color: #222426;
+    opacity: 0.8;
+    transform: translateY(-100%);
+    transition: 0.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s;
+    &.animated {
+      transform: translateY(0);
+    }
+  }
+  &__list {
+    display: flex;
+    margin-top: 48px;
+    overflow: hidden;
+    @media (min-width: 1440px) {
+      margin-right: -80px;
+    }
+    margin-right: -16px;
+
+    .slider {
+      width: 100%;
+
+      &__range {
+        margin: 56px auto 0;
+      }
+    }
+  }
+
+  &__item {
+    user-select: none;
+    width: 365px;
+    min-width: 365px;
+    margin-right: 32px;
+
+    border: 1px solid #222426;
+    padding: 32px 20px 30px 24px;
+    display: flex;
+    flex-direction: column;
+
+    opacity: 0;
+    transition: 0.3s all ease-in;
+
+    &:not(:first-child) {
+      margin-left: -1px;
+    }
+    &.animated {
+      opacity: 1;
+    }
+    &-title {
+      font-family: 'MADE Mirage';
+      font-style: normal;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 150%;
+
+      text-transform: uppercase;
+
+      color: #222426;
+      margin-bottom: 2px;
+    }
+    &-sub {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 140%;
+      color: #989898;
+
+      margin-bottom: 12px;
+    }
+    &-rating {
+      display: flex;
+      margin-bottom: 24px;
+    }
+    &-text {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 160%;
+      color: #222426;
+      flex-grow: 1;
+    }
+    &-status {
+      margin-top: 32px;
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 160%;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #222426;
+      div {
+        margin-right: 6px;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #222426;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .slick-slide {
+    width: calc(365px + 32px);
+    min-width: calc(365px + 32px);
+    padding: 0 16px;
+  }
+
+  .slick-list,
+  .slick-track {
+    display: flex;
+  }
+
+  @media (max-width: 1024px) {
+    &__title {
+      font-size: 48px;
+      min-width: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding-top: 64px;
+    &__title {
+      font-size: 30px;
+      text-align: left;
+      max-width: 335px;
+      margin: 0 0 20px;
+    }
+
+    &__text {
+      font-size: 16px;
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 490px) {
+    &__list {
+      margin-left: 0;
+      .slider__range {
+        margin-top: 24px;
+      }
+    }
+    &__item {
+      width: 244px;
+      min-width: 244px;
+      margin-right: 8px;
+      &-title {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 150%;
+        margin-bottom: 2px;
+      }
+      &-text {
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 140%;
+      }
+      &-rating {
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+        margin-bottom: 17px;
+      }
+      &-text {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 150%;
+      }
+      &-status {
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 140%;
+        div {
+          width: 12px;
+          height: 12px;
+        }
+      }
+    }
+  }
+}

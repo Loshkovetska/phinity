@@ -1,0 +1,81 @@
+.related-posts {
+  width: 100%;
+  position: relative;
+
+  max-width: 1440px;
+  margin: 0 auto;
+  &__vector {
+    position: absolute;
+    right: -16px;
+    z-index: -1;
+    @media (min-width: 1440px) {
+      right: -80px;
+    }
+    top: 200px;
+    transition: 3s linear;
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+  padding-top: 140px;
+
+
+  .blogs__item {
+    width: 630px;
+    min-width: 630px;
+
+    margin: 0 0 0 0;
+
+    &:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
+
+  .slider__bottom {
+    margin: 0;
+  }
+
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 110%;
+    color: #222426;
+    margin-bottom: 56px;
+
+  }
+  @media (max-width: 1024px) {
+    &__title {
+      font-size: 48px;
+      margin-bottom: 24px;
+    }
+
+    .blogs__item {
+      margin: 0 0 0 0;
+
+      &:not(:last-child) {
+        margin-right: 10px;
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    padding-top: 64px;
+    &__title {
+      font-size: 30px;
+    }
+
+    .blogs__item {
+      width: 328px;
+      min-width: 328px;
+      &-text {
+        -webkit-line-clamp: 2;
+      }
+      margin: 0 0 0 0;
+
+      &:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+  }
+}

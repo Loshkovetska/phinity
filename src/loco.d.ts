@@ -1,0 +1,8 @@
+declare module 'locomotive-scroll'
+declare module 'circletype'
+declare module 'react-slick'
+declare module 'scrollmagic'
+declare module 'gsap'
+declare module '@react-google-maps/api'
+declare module 'jquery'
+declare module 'paginationjs'

@@ -1,0 +1,57 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  color: #222426;
+}
+body.hidden {
+  overflow: hidden;
+  [data-scroll] {
+    transform: none !important;
+  }
+  .c-scrollbar {
+    display: none;
+  }
+}
+
+html.has-scroll-smooth {
+  overflow: hidden;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+#root {
+  background: #efebe4;
+  height: 100%;
+  width: 100%;
+  transition: 0.5s ease background-color;
+}
+
+body.filter {
+  overflow: hidden;
+  #root {
+    background: rgba(34, 36, 38, 0.2);
+  }
+}
+.container {
+  padding: 0 80px 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  @media (max-width: 1439px) {
+    padding: 0 16px;
+  }
+}
+
+.space-block {
+  height: 181px;
+  @media (max-width: 1024px) {
+    height: 64px;
+  }
+}
+
+@import './fonts/index.scss';

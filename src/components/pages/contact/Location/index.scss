@@ -1,0 +1,150 @@
+.location {
+  width: 100%;
+  position: relative;
+  padding-top: 140px;
+
+  &__container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+  }
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 110%;
+  }
+
+  &__vector {
+    position: absolute;
+
+    &.desk {
+      top: 50%;
+      left: -80px;
+      transition: 3s linear all;
+
+      @media (max-width: 1439px) {
+        left: -16px;
+      }
+    }
+    &.mob {
+      display: none;
+      top: 0%;
+      left: -16px;
+      transition: 2.5s linear all;
+    }
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    &-block {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    &-title {
+      font-family: 'MADE Mirage';
+      font-style: normal;
+      font-weight: 500;
+      font-size: 32px;
+      line-height: 130%;
+      /* identical to box height, or 42px */
+
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    &-text {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 160%;
+    }
+  }
+
+  &__map {
+    height: 623px;
+    width: 623px;
+    border-radius: 50%;
+    background-color: #fff;
+
+    button[aria-label='Показать спутниковую карту'],
+    .gm-svpc {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 1120px) {
+    &__map {
+      width: 500px;
+      height: 500px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &__map {
+      width: 451px;
+      height: 451px;
+    }
+    &__title {
+      font-size: 48px;
+      margin-bottom: 32px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    &__container {
+      flex-direction: column;
+    }
+
+    &__map {
+      align-self: center;
+      margin-top: 30px;
+    }
+
+    &__col-title {
+      font-size: 24px;
+      line-height: 130%;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding-top: 64px;
+    &__title {
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 120%;
+    }
+
+    &__vector {
+      &.desk {
+        display: none;
+      }
+      &.mob {
+        display: block;
+      }
+    }
+    &__col-title {
+      font-size: 20px;
+      line-height: 130%;
+      margin-bottom: 16px;
+    }
+
+    &__col-text {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 150%;
+    }
+
+    &__map {
+      align-self: center;
+      margin-top: 48px;
+    }
+  }
+}

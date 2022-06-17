@@ -1,0 +1,111 @@
+.cookie {
+  width: 100%;
+  height: 100vh;
+  background: rgba(34, 36, 38, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: 1s ease all;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000000;
+
+  &.anim {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &__container {
+    background: #efebe4;
+    margin-bottom: 16px;
+    margin-right: 80px;
+    padding: 16px 32px 40px;
+    max-width: 413px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    @media (max-width: 1439px) {
+      margin-right: 16px;
+    }
+  }
+
+  &__close {
+    cursor: pointer;
+  }
+
+  &__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    margin-right: -16px;
+    align-self: flex-end;
+  }
+
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 150%;
+    /* identical to box height, or 36px */
+
+    display: flex;
+    align-items: center;
+    text-align: center;
+    text-transform: uppercase;
+
+    /* Phinity black */
+
+    color: #222426;
+
+    opacity: 0.8;
+    margin-bottom: 12px;
+  }
+
+  &__text {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 160%;
+    /* or 26px */
+
+    text-align: center;
+
+    /* Phinity black */
+
+    color: #222426;
+
+    opacity: 0.8;
+    margin-bottom: 24px;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  @media (max-width: 600px) {
+    align-items: center;
+    justify-content: center;
+    &__container {
+      max-width: none;
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 0;
+      padding: 16px 32px 40px;
+    }
+
+    &__title {
+      font-size: 20px;
+    }
+
+    &__text {
+      font-size: 14px;
+    }
+  }
+}

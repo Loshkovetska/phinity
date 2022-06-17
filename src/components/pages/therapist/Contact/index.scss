@@ -1,0 +1,168 @@
+.therapist-contact {
+  width: 100%;
+  padding-top: 140px;
+  padding-bottom: 0;
+  position: relative;
+  z-index: 1;
+
+  &__container {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-family: 'MADE Mirage';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 80px;
+    line-height: 110%;
+    transition: 1.5s transform ease;
+    transform-origin: bottom left;
+    transform: rotate(-10deg) translate3d(0, -130%, 0);
+    &.animated {
+      transform: rotate(0) translate3d(0, 0%, 0);
+    }
+  }
+  &__map {
+    height: 623px;
+    width: 622.9901733398438px;
+    border-radius: 50%;
+    background-color: #fff;
+    transition: 1s ease-in-out opacity 2s;
+    opacity: 0;
+
+    &.animated {
+      opacity: 1;
+    }
+
+    button[aria-label='Показать спутниковую карту'],
+    .gm-svpc {
+      display: none !important;
+    }
+  }
+
+  &__item {
+    transition: 1s transform ease;
+
+    transform: translateY(-100%);
+    &.animated {
+      transform: translateY(0%);
+    }
+    &-title {
+      font-family: 'MADE Mirage';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 150%;
+      /* identical to box height, or 27px */
+
+      text-transform: uppercase;
+
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+    &-text {
+      font-family: 'Montserrat';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 18px;
+      line-height: 160%;
+      cursor: pointer;
+    }
+
+    &:not(:last-child) {
+      margin-bottom: 40px;
+    }
+    &:last-child {
+      margin-bottom: 30px;
+    }
+  }
+  &__col {
+    display: flex;
+    flex-direction: column;
+    &-block {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+  }
+
+  @media (max-width: 1120px) {
+    &__map {
+      width: 500px;
+      height: 500px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    &__title {
+      font-size: 48px;
+      margin-bottom: 32px;
+    }
+
+    &__map {
+      width: 451px;
+      height: 451px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    &__container {
+      flex-direction: column;
+    }
+    &__map {
+      align-self: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding-top: 64px;
+    padding-bottom: 0;
+    &__title {
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 120%;
+      margin-bottom: 32px;
+    }
+
+    &__item {
+      &-title {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 150%;
+      }
+      &-text {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 150%;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 48px;
+      }
+      &:last-child {
+        margin-bottom: 34px;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    &__map {
+      height: 328px;
+      width: 327.99481201171875px;
+    }
+  }
+
+  @media (max-width: 350px) {
+    &__map {
+      width: 100%;
+    }
+  }
+}
