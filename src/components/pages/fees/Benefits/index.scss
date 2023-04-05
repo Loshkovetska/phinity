@@ -1,6 +1,4 @@
 .benefits {
-  max-width: 1440px;
-  margin: 0 auto;
   width: 100%;
   padding: 180px 0 0;
   position: relative;
@@ -30,6 +28,8 @@
   &__container {
     position: relative;
     z-index: 1;
+    max-width: 1440px;
+    margin: 0 auto;
   }
 
   &__row {
@@ -57,25 +57,24 @@
     margin-bottom: 56px;
     font-family: 'MADE Mirage';
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     font-size: 32px;
     line-height: 130%;
     text-align: center;
-    text-transform: uppercase;
   }
 
   &__vector {
     position: absolute;
     top: 0;
     right: -124px;
-    transition: 3s linear all;
+    transition: 3s ease-out all;
     transform: rotateX(180deg) rotateY(180deg);
   }
 
   &__row-text {
     max-width: 468px;
 
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
@@ -106,18 +105,11 @@
 
       height: 1px;
       background: #ded9ce;
-      transition: 0.5s ease-in width, 0.5s ease background-color;
+      transition: 0.5s ease-out width, 0.5s ease-out background-color;
     }
 
     &:not(:last-child) {
       margin-bottom: 39px;
-    }
-
-    &:hover {
-      &::after {
-        width: 100%;
-        background: #0033cc;
-      }
     }
 
     &-num {
@@ -130,11 +122,10 @@
 
       display: flex;
       align-items: center;
-      text-transform: uppercase;
       margin-bottom: 12px;
     }
     &-text {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -194,7 +185,6 @@
     padding-top: 64px;
 
     &__title {
-      font-weight: 400;
       font-size: 30px;
       line-height: 120%;
       margin-bottom: 32px;
@@ -202,7 +192,6 @@
 
     &__row {
       &-title {
-        font-weight: 400;
         font-size: 20px;
         line-height: 130%;
         margin-bottom: 24px;
@@ -269,7 +258,7 @@
       width: 531.59px;
       height: 537.04px;
       right: auto;
-      transition: 2.5s linear all;
+      transition: 2.5s ease-out all;
       transform: rotateX(180deg) rotateY(0);
 
       left: -125px;

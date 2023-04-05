@@ -1,31 +1,27 @@
 import { observer } from 'mobx-react'
-import { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router'
-import Footer from '../components/common/Footer'
-import Header from '../components/common/Header'
-import ScrollToTop from '../components/common/ScrollToTop'
-import SearchBox from '../components/common/SearchBox'
-import PrivacyContent from '../components/pages/privacy/PrivacyContent'
-import useLocoScroll from '../hooks/useLoco'
-import ContentStore, { getMenu, getPrivacy } from '../stores/ContentStore'
+import { Suspense, useEffect, useRef, useState, lazy } from 'react'
+import Layout from '../components/common/Layout'
+import { getHome, getPrivacy } from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
 
+const PrivacyContent = lazy(() =>
+  import('../components/pages/privacy/PrivacyContent'),
+)
 const PrivacyPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const [service, setService] = useState<any>(null)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
 
-  useLocoScroll(!loading)
   useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-    getMenu()
+    if (effectRef.current) return
+
+    getReviewsIO()
+    getHome()
     getPrivacy().then(() => {
-      document.title = `Phinity | ${ContentStore.privacy.title}`
+      setLoading(false)
     })
+    effectRef.current = true
   }, [])
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -40,22 +36,12 @@ const PrivacyPage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <PrivacyContent />
-            <SearchBox />
-            <Footer />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
     </>
   )

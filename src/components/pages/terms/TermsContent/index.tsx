@@ -4,76 +4,84 @@ import { ReactComponent as Vector } from '../../../../assets/home-area.svg'
 import ContentStore from '../../../../stores/ContentStore'
 import GlobalState from '../../../../stores/GlobalState'
 import PageLinks from '../../../common/PageLinks'
-const TermsContent = observer(() => {
+const TermsContent = observer(({ dt }: { dt: any }) => {
   useEffect(() => {
-    if (GlobalState.locoScroll) {
+    setTimeout(() => {
+      if (dt) {
+        const smooth = document.querySelector('.smooth')
+        const issues = smooth!.querySelector('.terms')
+        if (!issues) return
+        const title = smooth!.querySelector('.terms .privacy__title')
+        const items = smooth!.querySelectorAll(
+          '.terms p, .terms ul, .terms ol ',
+        )
+
+        issues?.classList.add('animated')
+        setTimeout(() => {
+          title?.classList.add('animated')
+        }, 300)
+        setTimeout(() => {
+          items.forEach((i, id) => {
+            i?.classList.add('animated')
+            ;(i as HTMLElement).style.transitionDelay = `${id / 4 + 0.5}`
+          })
+        }, 1500)
+      }
+    }, 1500)
+  }, [dt])
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!dt) return
+      if (window.innerWidth <= 768) return
+      const container = document.querySelector('.terms')
+      const vect = document.querySelector('.terms .privacy__vector')
       const smooth = document.querySelector('.smooth')
-      const issues = smooth!.querySelector('.terms')
-      if (!issues) return
-      const title = smooth!.querySelector('.terms .privacy__title')
-      const items = smooth!.querySelectorAll('.terms .privacy__row')
+      var bodyRect = smooth!.getBoundingClientRect(),
+        elemRect = container!.getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top,
+        offsetBottom = elemRect.bottom - elemRect.height / 2
 
-      issues?.classList.add('animated')
-      setTimeout(() => {
-        title?.classList.add('animated')
-      }, 300)
-      setTimeout(() => {
-        items.forEach((i, id) => {
-          i?.classList.add('animated')
-          ;(i as HTMLElement).style.transitionDelay = `${id / 4 + 0.5}`
-        })
-      }, 1500)
-    }
-  }, [GlobalState.locoScroll])
-
-  useEffect(() => {
-    if (window.innerWidth <= 768) return
-    const container = document.querySelector('.terms')
-    const vect = document.querySelector('.terms .privacy__vector')
-    const smooth = document.querySelector('.smooth')
-    var bodyRect = smooth!.getBoundingClientRect(),
-      elemRect = container!.getBoundingClientRect(),
-      offset = elemRect.top - bodyRect.top,
-      offsetBottom = elemRect.bottom - elemRect.height / 2
-
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
-          }px, 0)`
+      window.addEventListener('scroll', () => {
+        if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+          requestAnimationFrame(() => {
+            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+              window.scrollY - offset
+            }px, 0)`
+          })
         }
       })
-  }, [GlobalState.locoScroll])
+    }, 1500)
+  }, [dt])
 
-  if (!ContentStore.terms.content) return <></>
+  if (!dt) return <></>
+
+  let main = ''
+  const linksL = GlobalState.links
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+  }
 
   return (
     <section className="terms privacy">
       <PageLinks
         links={[
-          { title: ContentStore.terms.mainPageTitle, link: '/' },
-          { title: ContentStore.terms.pageTitle, link: '/terms' },
+          { title: dt.mainPageTitle, link: main },
+          { title: dt.pageTitle, link: '/cookie-page' },
         ]}
       />
-
       <Vector className="privacy__vector" />
       <div className="privacy__container">
         <div style={{ overflow: 'hidden' }}>
-          <div
+          <h1
             className="privacy__title"
-            dangerouslySetInnerHTML={{ __html: ContentStore.terms.title }}
-          ></div>
+            dangerouslySetInnerHTML={{ __html: dt.title }}
+          ></h1>
         </div>
-        {ContentStore.terms.content?.map((c, i) => (
-          <div className="privacy__row" key={i}>
-            <div className="privacy__sub-title">{c.title}</div>
-            <div
-              className="privacy__sub-text"
-              dangerouslySetInnerHTML={{ __html: c.text }}
-            ></div>
-          </div>
-        ))}
+        <div
+          className="privacy__content"
+          dangerouslySetInnerHTML={{ __html: dt.content }}
+        ></div>
       </div>
     </section>
   )

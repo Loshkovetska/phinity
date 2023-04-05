@@ -8,6 +8,7 @@
     position: relative;
     max-width: 1440px;
     margin: 0 auto;
+    z-index: 1;
   }
 
   .button {
@@ -28,7 +29,7 @@
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -39,9 +40,16 @@
 
     color: #222426;
 
-    opacity: 0.8;
+    // opacity: 0.8;
+    opacity: 0;
     margin: 24px 0 140px;
     max-width: 738px;
+
+    transition: 0.5s ease-in-out 1.5s;
+
+    &.animated {
+      opacity: 0.8;
+    }
   }
 
   .intro__bottom {
@@ -49,7 +57,7 @@
   }
 
   &__vector {
-    transition: 3s transform linear;
+    transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     position: absolute;
     top: 0;
     left: -80px;
@@ -77,7 +85,7 @@
 
   @media (max-width: 768px) {
     position: relative;
-    min-height: calc(100vh - 66px);
+    min-height: auto;
     display: flex;
     flex-direction: column;
     &__container {
@@ -94,12 +102,26 @@
     }
     .button {
       display: flex;
+      animation-delay: 1s;
+    }
+    .intro__widget {
+      animation-delay: 1.5s;
+      animation-duration: 0.5s;
     }
 
     .intro__bottom {
       display: flex;
-      justify-content: flex-start;
-      align-items: center;
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 40px;
+      flex-grow: 0;
+      // flex-direction: column;
+      // align-items: center;
+      // height: 100%;
+      // flex-grow: 1;
+      // padding-bottom: 52px;
     }
     &__title {
       text-align: center;
@@ -114,6 +136,9 @@
       font-size: 16px;
       line-height: 150%;
       max-width: 500px;
+    }
+    .intro__scroll {
+      animation-delay: 2s;
     }
   }
 }

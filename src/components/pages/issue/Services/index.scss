@@ -19,6 +19,28 @@
     z-index: 1;
   }
 
+  &__bottom {
+    margin-top: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    @media (max-width: 1024px) {
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      margin-top: 32px;
+    }
+  }
+
+  &__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
   &__title {
     font-family: 'MADE Mirage';
     font-style: normal;
@@ -26,9 +48,13 @@
     font-size: 80px;
     line-height: 110%;
     color: #222426;
-    margin-bottom: 40px;
-    transition: 1.5s transform ease;
 
+    transition: 1.5s transform ease;
+    max-width: 800px;
+  }
+
+  &__bottom {
+    display: none;
   }
 
   &__vector {
@@ -56,9 +82,20 @@
   @media (max-width: 1024px) {
     &__title {
       font-size: 48px;
+      max-width: 600px;
     }
     &__list {
       grid-template-columns: repeat(4, 197px);
+    }
+
+    &__top {
+      .button {
+        display: none;
+      }
+    }
+
+    &__bottom {
+      display: flex;
     }
   }
   @media (max-width: 850px) {
@@ -78,15 +115,19 @@
       font-weight: 400;
       font-size: 30px;
       line-height: 120%;
-      margin-bottom: 32px;
+
       text-align: center;
+    }
+
+    &__top {
+      margin-bottom: 32px;
     }
     &__list {
       grid-template-columns: repeat(4, 160px);
       grid-row-gap: 16px;
       grid-column-gap: 8px;
 
-      transition: 0.5s ease-in opacity;
+      transition: 0.5s ease-out opacity;
       opacity: 0;
 
       &.animated {
@@ -96,7 +137,7 @@
 
     &__vector {
       display: block;
-      transition: 2.5s linear transform;
+      transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     }
   }
   @media (max-width: 700px) {

@@ -1,0 +1,14 @@
+a[title='Сообщить об ошибке на карте или снимке'] {
+  display: none;
+}
+.gm-style-cc {
+  display: none;
+}
+
+.map {
+  iframe {
+    width: 100%;
+    border: none;
+    height: 100%;
+  }
+}

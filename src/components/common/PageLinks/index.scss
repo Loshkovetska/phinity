@@ -1,14 +1,24 @@
 .links {
   display: flex;
   align-items: center;
-  margin: 32px 0;
+  max-width: 1440px;
+  margin: 32px auto;
   flex-wrap: wrap;
   position: relative;
   z-index: 1;
+  width: 100%;
+  transition: 0.25s ease-in-out all;
+  visibility: hidden;
+  opacity: 0;
+
+  &.visible-links {
+    visibility: visible;
+    opacity: 1;
+  }
 
   &__item,
   &__separator {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;

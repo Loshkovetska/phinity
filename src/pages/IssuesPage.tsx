@@ -1,32 +1,33 @@
 import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Intro from '../components/pages/services/Intro'
-import BookBlock from '../components/pages/home/BookBlock'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import OurServices from '../components/pages/issues/OurServices'
-import { getIssues, getServices } from '../stores/DBStore'
-import IssuesList from '../components/pages/issues/IssuesList'
+import DBStore, {
+  filterIssues,
+  getIssues,
+  getIssuesFilters,
+  getPosts,
+  getVideos,
+} from '../stores/DBStore'
 import { observer } from 'mobx-react'
 import ContentStore, {
   getBookBlock,
+  getHome,
   getIssuesContent,
-  getMenu,
 } from '../stores/ContentStore'
+import GlobalState, { getReviewsIO } from '../stores/GlobalState'
+import Filter from '../components/pages/therapists/Filter'
+import Layout from '../components/common/Layout'
+import { lazy, Suspense } from 'react'
+
+const Blogs = lazy(() => import('../components/pages/home/Blogs'))
+const Videos = lazy(()=>import('../components/pages/blog/Videos'))
+const Intro = lazy(() => import('../components/pages/services/Intro'))
+const BookBlock = lazy(() => import('../components/pages/home/BookBlock'))
+const OurServices = lazy(()=>import('../components/pages/issues/OurServices'))
+const IssuesList = lazy(()=>import('../components/pages/issues/IssuesList'))
 
 const IssuesPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const [filter, setFilter] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
 
   useEffect(() => {
     if (!loading) {
@@ -37,56 +38,94 @@ const IssuesPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
-    getServices()
-    getIssues()
-    getIssuesContent().then(() => {
-      document.title = `Phinity Therapy | ${ContentStore.issues.pageTitle}`
-    })
+    if (effectRef.current) return
+    getIssuesContent().then(() => {})
     getBookBlock()
-    getMenu()
+    getReviewsIO()
+    getHome()
+    getIssuesFilters()
+    getVideos()
+    getPosts()
+    getIssues()
+    effectRef.current = true
   }, [])
+
+  useEffect(() => {
+    if (DBStore.issues && ContentStore.issues) {
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000)
+    }
+  }, [DBStore.issues, ContentStore.issues])
 
   if (typeof window === 'undefined' || !window.document) {
     return <></>
   }
 
-  if (!ContentStore.issues) return <></>
+  let main = '',
+    issuesL = ''
+  const linksL = GlobalState.links
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+    issuesL = linksL.find((l: any) => l.id == 266).link
+  }
+
   const links = [
     {
       title: ContentStore.issues.mainPageTitle,
-      link: '/',
+      link: main,
     },
     {
       title: ContentStore.issues.pageTitle,
       link: '/issues',
     },
   ]
+  if (!ContentStore.issues) return <></>
+  if (!DBStore.issuesFilters || !DBStore.issues) return <></>
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withScroll>
+          <Suspense fallback={<></>}>
             <Intro
-              dt={ContentStore.issues.intro}
+              dt={{
+                ...ContentStore.issues.intro,
+                buttonLink: ContentStore.issues.intro.buttonLink,
+              }}
               links={links}
               classname="service-page"
             />
             <OurServices />
             <IssuesList />
+            <Blogs
+              arr={DBStore.posts}
+              dt={{
+                title: ContentStore.issues.blogTitle,
+                buttonTitle: ContentStore.issues.blogButton,
+              }}
+            />
+            <Videos arr={DBStore.videos} dt={ContentStore.issues.video} />
+
             <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
+      <Filter
+        params={DBStore.issuesFilters}
+        setFilter={(value) => {
+          if (value == null) {
+            setFilter(null)
+            getIssues()
+          } else {
+            const st: any = {}
+            DBStore.issuesFilters.forEach((e: any, i: number) => {
+              st[e.title.replaceAll(' ', '')] = value[`p${i}`]
+            })
+            setFilter(st)
+            filterIssues(st)
+          }
+        }}
+      />
     </>
   )
 })

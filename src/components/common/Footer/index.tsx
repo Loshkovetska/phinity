@@ -1,141 +1,211 @@
 import './index.scss'
-import { ReactComponent as Logo } from '../../../assets/logo.svg'
-
-import fb from '../../../assets/socials/black_facebook 1.png'
-import inst from '../../../assets/socials/black_instagram 1.png'
-import tw from '../../../assets/socials/black_twitter 1.png'
-import { Link } from 'react-router-dom'
+import logo from '../../../assets/logo.svg'
 import { observer } from 'mobx-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import ContentStore from '../../../stores/ContentStore'
+import classNames from 'classnames'
 import GlobalState from '../../../stores/GlobalState'
-import CustomLink from '../CustomLink'
 const Footer = observer(() => {
+  const [width, setWidth] = useState(window.innerWidth)
   useEffect(() => {
-    const smooth = document.querySelector('.smooth')
     const footer = document.querySelector('.footer')
-    const offers = smooth!.querySelector('.footer')!.previousSibling!
-    const height = footer?.getBoundingClientRect().height,
-      bodyHeight = smooth?.getBoundingClientRect().height
-    var bodyRect = smooth!.getBoundingClientRect(),
-      elemRect = footer!.getBoundingClientRect(),
-      prevRect = (offers as HTMLDivElement)!.getBoundingClientRect(),
-      offset = elemRect.top - bodyRect.top
-    if (GlobalState.locoScroll) {
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (window.innerWidth > 768 && window.innerWidth < 900) {
-          if (args.scroll.y + 200 > prevRect!.bottom - 500) {
-            ;(footer as any)?.classList.add('animated')
-          }
+
+    if (!footer) return
+
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          ;(footer as any)?.classList.add('animated')
         } else {
-          if (args.scroll.y + height! + 150 >= offset) {
-            ;(footer as any)?.classList.add('animated')
-          }
         }
-      })
-    }
-  }, [GlobalState.locoScroll])
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      },
+    )
+
+    observer.observe(footer)
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('resize', () => setWidth(window.innerWidth))
+  }, [])
+
+  const linksL = GlobalState.links
+  let main = ''
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+  }
+
   return (
     <footer className="footer">
       <div className="footer__row">
         <div className="footer__col grow">
-          <Logo className="footer__logo" />
-          {window.innerWidth > 550 && (
+          <img
+            src={logo}
+            className="footer__logo"
+            onClick={() => (window.location.href = main)}
+          />
+          {width > 550 && (
             <>
               <div
-                className="footer__text grey"
+                className="footer__text grey link"
                 onClick={() => {
-                  window.location.href = 'tel:07761409077'
+                  window.location.href = `tel:${
+                    (ContentStore.menu as any)?.phone
+                  }`
                 }}
               >
-                077 6140 9077
+                {(ContentStore.menu as any)?.phone}
               </div>
-              <div className="footer__text grey">
-                1 Harley Street, London, W1G 9QD
-              </div>
-              <div className="footer__text grey">Mon-Sun 8 AM- 8 PM</div>
+              <div
+                className="footer__text grey"
+                dangerouslySetInnerHTML={{
+                  __html: (ContentStore.menu as any)?.location.text,
+                }}
+              ></div>
             </>
           )}
         </div>
         <div className="footer__col w50p mr0">
-          <div className="footer__sub-title ">Navigation</div>
-          <Link to="/services" className="footer__text">
-            Services
-          </Link>
-          <Link to="/issues" className="footer__text">
-            Issues
-          </Link>
-          <Link to="/therapists" className="footer__text">
-            Therapists
-          </Link>
-          <Link to="/fees" className="footer__text">
-            Fees
-          </Link>
+          <div className="footer__sub-title ">
+            {(ContentStore.menu as any)?.navTitle}
+          </div>
+          {/* Navigation */}
+          {(ContentStore.menu as any)?.nav?.map((n: any, i: number) => (
+            <a href={n.link} className="footer__text link" key={i}>
+              {n.title}
+            </a>
+          ))}
         </div>
         <div className="footer__col mr0 w50p">
-          <div className="footer__sub-title">Info Pages</div>
-          <Link to="/blog" className="footer__text">
-            Blog
-          </Link>
-          <Link to="/about" className="footer__text">
-            About us
-          </Link>
-          <Link to="/contact" className="footer__text">
-            Contact us
-          </Link>
-          <Link to="/faq" className="footer__text">
-            FAQ
-          </Link>
+          <div className="footer__sub-title">
+            {(ContentStore.menu as any).infoTitle}
+          </div>
+          {/* Info Pages */}
+          {(ContentStore.menu as any).info?.map((n: any, i: number) => (
+            <a href={n.link} className="footer__text link" key={i}>
+              {n.title}
+            </a>
+          ))}
         </div>
         <div className="footer__col mr0 grow">
-          <div className="footer__sub-title">Follow us</div>
-          <div className="footer__text social">
-            <img src={tw} />
-            Twitter
+          <div className="footer__sub-title">
+            {(ContentStore.menu as any).followTitle}
           </div>
-          <div className="footer__text social">
-            <img src={fb} /> Facebook
+          {/* Follow us */}
+          <div className="footer__sub-socials">
+            {(ContentStore.menu as any).follow?.map((f: any, i: number) => (
+              <a
+                key={i}
+                className="footer__text social"
+                href={f.link}
+                target={'__blank'}
+              >
+                <img src={f.icon} alt={f.link} />
+              </a>
+            ))}
           </div>
-          <div className="footer__text social">
-            <img src={inst} /> Instagram
-          </div>
+          {width > 550 && (
+            <>
+              <div className="footer__sub-title">
+                {(ContentStore.menu as any)?.emailTitle}
+              </div>
+              {/* Email us */}
+              <div
+                className="footer__text link"
+                onClick={() =>
+                  (window.location.href = `mailto: ${
+                    (ContentStore.menu as any)?.email
+                  }`)
+                }
+              >
+                {(ContentStore.menu as any)?.email}
+              </div>
+            </>
+          )}
         </div>{' '}
-        {window.innerWidth <= 550 && (
+        {width <= 550 && (
           <>
             <div className="footer__col w50p">
-              <div className="footer__sub-title mb16">Phone number</div>
+              <div className="footer__sub-title mb16">
+                {(ContentStore.menu as any)?.phoneTitle}
+              </div>
+              {/* Phone number */}
               <div
-                className="footer__text"
+                className="footer__text link"
                 onClick={() => {
-                  window.location.href = 'tel:07761409077'
+                  window.location.href = `tel:${
+                    (ContentStore.menu as any)?.phone
+                  }`
                 }}
               >
-                077 6140 9077
+                {(ContentStore.menu as any)?.phone}
               </div>
             </div>
-            <div className="footer__col w50p mr0">
-              <div className="footer__sub-title mb16">Location</div>
-              <div className="footer__text">
-                1 Harley Street, London, W1G 9QD
+            <div className="footer__col w100p mr0">
+              <div className="footer__sub-title">
+                {(ContentStore.menu as any)?.emailTitle}
+              </div>
+              <div
+                className="footer__text link"
+                onClick={() =>
+                  (window.location.href = `mailto: ${
+                    (ContentStore.menu as any)?.email
+                  }`)
+                }
+              >
+                {(ContentStore.menu as any)?.email}
               </div>
             </div>
-            <div className="footer__col w150">
-              <div className="footer__sub-title mb16">Open work</div>
-              <div className="footer__text">Mon-Sun 6 AM-10 PM</div>
+
+            <div className="footer__col w100p">
+              <div className="footer__sub-title mb16">
+                {(ContentStore.menu as any)?.sheduleTitle}
+              </div>
+              {/* Open work */}
+              <div
+                className="footer__text"
+                dangerouslySetInnerHTML={{
+                  __html: (ContentStore.menu as any)?.location.text,
+                }}
+              ></div>
             </div>
           </>
         )}
       </div>
+      {width <= 550 && (
+        <div className="footer__sub-title mb16">
+          {(ContentStore.menu as any)?.locationTitle}
+        </div>
+      )}
+      <div
+        className="footer__text grey link-locat"
+        dangerouslySetInnerHTML={{
+          __html: (ContentStore.menu as any)?.shedule,
+        }}
+      ></div>
+
       <div className="footer__row last">
         <div className="footer__sub-text copy">
-          Copyright © 2022 Phinity Therapy. All rights reserved.
+          Copyright © {new Date().getFullYear()} Phinity Therapy. All Rights
+          Reserved.
         </div>
         <div className="footer__col">
-          <Link to="/terms" className="footer__sub-text mr32 link">
-            Terms of Services
-          </Link>
-          <Link to="/privacy" className="footer__sub-text link">
-            Privacy Policy
-          </Link>
+          {(ContentStore.menu as any)?.bottomLinks?.map((c: any, i: any) => (
+            <a
+              href={c.link}
+              className={classNames(
+                'footer__sub-text link',
+                i + 1 != (ContentStore.menu as any)?.bottomLinks.length &&
+                  'mr32',
+              )}
+              key={i}
+            >
+              {c.title}
+            </a>
+          ))}
         </div>
       </div>
     </footer>

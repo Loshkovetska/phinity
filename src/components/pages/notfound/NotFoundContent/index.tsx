@@ -6,10 +6,16 @@ import { ReactComponent as Hands } from '../../../../assets/Hands.svg'
 import { useNavigate } from 'react-router'
 import Button from '../../../common/Button'
 import ContentStore from '../../../../stores/ContentStore'
+import GlobalState from '../../../../stores/GlobalState'
 
 const NotFoundContent = observer(() => {
-  const navigate = useNavigate()
   if (!ContentStore.nofound) return <></>
+
+  const linksL = GlobalState.links
+  let main = ''
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+  }
   return (
     <section className="thanks animated fadeIn">
       <Ellipse1 className="therapist-intro__vector w31" />
@@ -37,12 +43,14 @@ const NotFoundContent = observer(() => {
           <Button
             classname="black-border p18p40"
             text={ContentStore.nofound.backButton}
-            click={() => navigate(-1)}
+            click={() => {
+              window.history.go(-1)
+            }}
           />
           <Button
             classname="blue p18p40"
             text={ContentStore.nofound.homeButton}
-            click={() => navigate('/')}
+            click={() => (window.location.href = main)}
           />
         </div>
       </div>

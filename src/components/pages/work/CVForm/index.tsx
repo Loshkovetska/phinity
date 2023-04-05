@@ -9,9 +9,12 @@ import { useEffect, useState } from 'react'
 import GlobalState from '../../../../stores/GlobalState'
 import Button from '../../../common/Button'
 import CheckBox from '../../../common/CheckBox'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import ContentStore from '../../../../stores/ContentStore'
+import { DOMAIN } from '../../../../mocks/doman'
 const CVForm = observer(() => {
+  const { pathname } = useLocation()
+
   const [st, setState] = useState<any>({
     name: '',
     isNameFocus: false,
@@ -27,6 +30,12 @@ const CVForm = observer(() => {
 
   const emailValidate = (email: string) => {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+  }
+
+  let thanks = ''
+  const linksL = GlobalState.links
+  if (linksL) {
+    thanks = linksL.find((l: any) => l.id == 635).link
   }
 
   const submit = () => {
@@ -46,15 +55,17 @@ const CVForm = observer(() => {
     const fd = new FormData()
     fd.append('firstname', st.name)
     fd.append('email', st.email)
-    fd.append('file', st.file, st.file.name)
-    fd.append('msg', st.msg)
-    fd.append('status', 'contact')
+   st.file && fd.append('file', st.file, st.file.name)
+    fd.append('message', st.msg)
+    fd.append('link', pathname!.split('/').pop()!)
+    fd.append('status', 'mail2')
     setErrors({ ...errors, ...errs })
-    console.log(st)
-    // fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // }).then(() => navigate('/thanks'))
+    fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    }).then(() => {
+      window.location.href = thanks
+    })
   }
   const fileLoad = (e: any) => {
     var reader = new FileReader()
@@ -66,21 +77,28 @@ const CVForm = observer(() => {
   }
 
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        const smooth = document.querySelector('.smooth')
-        const issues = smooth!.querySelector('.cv-form')
+    window.addEventListener('scroll', (args: any) => {
+      const smooth = document.querySelector('.smooth')
+      if (!smooth) return
+      const issues = smooth!.querySelector('.cv-form')
 
-        var bodyRect = smooth!.getBoundingClientRect(),
-          elemRect = issues!.getBoundingClientRect(),
-          offset = elemRect.top - bodyRect.top
+      var bodyRect = smooth!.getBoundingClientRect(),
+        elemRect = issues!.getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top
 
-        if (args.scroll.y > offset - 500) {
-          issues?.classList.add('animated')
-        }
-      })
-    }
-  }, [GlobalState.locoScroll])
+      if (window.scrollY > offset - 800) {
+        issues?.classList.add('animated')
+      }
+    })
+  }, [ContentStore.job])
+
+  const links = GlobalState.links
+  let privacy = '',
+    terms = ''
+  if (links) {
+    privacy = links.find((l: any) => l.id == 3).link
+    terms = links.find((l: any) => l.id == 591).link
+  }
 
   if (!ContentStore.job) return <></>
   return (
@@ -136,11 +154,14 @@ const CVForm = observer(() => {
           <div className="cv-form__file">
             <label>
               <File />
-              <input type={'file'} className="input-file" onChange={fileLoad} />
-              <div className="cv-form__file-title">Attach your cv</div>
-              <div className="cv-form__file-text">
-                (.pdf .docx .png .zip .rar or .txt)
-              </div>
+              <input
+                type={'file'}
+                className="input-file"
+                onChange={fileLoad}
+                accept=".doc,.docx,.pdf"
+              />
+              <div className="cv-form__file-title cursor">Attach Your CV</div>
+              <div className="cv-form__file-text">(Word Document or PDF)</div>
             </label>
             {st.file && (
               <div className="cv-form__file-title mt12 capitalize">
@@ -153,9 +174,9 @@ const CVForm = observer(() => {
               <CheckBox
                 text={
                   <>
-                    By clicing this button, you accept{' '}
-                    <Link to={'/terms'}> Terms of Services </Link> and{' '}
-                    <Link to={'/privacy'}> Privacy Policy </Link>
+                    By Checking This Box You Confirm That You Have Read And
+                    Accept Our <a href={terms}> Terms of Use </a> And{' '}
+                    <a href={privacy}> Privacy Policy </a>
                   </>
                 }
                 change={(value) => setState({ ...st, isCheck: value })}
@@ -189,17 +210,6 @@ const CVForm = observer(() => {
           >
             {ContentStore.job.form.email}
           </div>
-          <div
-            className="cv-form__col-text w305"
-            dangerouslySetInnerHTML={{
-              __html: ContentStore.job.form.p2,
-            }}
-          ></div>
-          {ContentStore.job.form.socials.map((so, i) => (
-            <a className="cv-form__link" href={so.link} key={i}>
-              {so.title}
-            </a>
-          ))}
         </div>
       </div>
     </section>

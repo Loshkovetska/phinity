@@ -15,7 +15,7 @@
     height: 924.83px;
     position: absolute;
     z-index: 0;
-    transition: 3s linear transform;
+    transition: 3s ease transform;
 
     @media (min-width: 1440px) {
       right: -80px;
@@ -79,7 +79,6 @@
       font-weight: 500;
       font-size: 32px;
       line-height: 130%;
-      text-transform: uppercase;
     }
     display: flex;
     flex-direction: column;

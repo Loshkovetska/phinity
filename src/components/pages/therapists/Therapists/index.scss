@@ -31,7 +31,7 @@
 
   &__intro {
     display: none;
-    height: calc(100vh - 66px);
+    min-height: calc(100vh - 66px);
     width: 100%;
   }
   .links {
@@ -44,7 +44,7 @@
   &__top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+
     margin-bottom: 62px;
     max-width: 1440px;
     margin: 0 auto 62px;
@@ -72,13 +72,14 @@
     right: -16px;
   }
   .button.filter {
+    margin-left: 48px;
     text-transform: capitalize;
     font-weight: 400;
     font-size: 16px;
     line-height: 160%;
-    transition: 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) opacity 0.5s,
-      0.5s ease-in background-color, 0.5s ease-in color,
-      0.5s ease-in border-color;
+    transition: 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) opacity 1s,
+      0.5s ease-out background-color, 0.5s ease-out color,
+      0.5s ease-out border-color;
     opacity: 0;
 
     &.animated {
@@ -95,6 +96,10 @@
 
     &.animated {
       opacity: 1;
+    }
+
+    .therapists__item-img {
+      max-height: 408px;
     }
   }
   &__list {
@@ -140,7 +145,8 @@
     }
     &__top {
       margin-bottom: 24px;
-      padding-top: 64px;
+      padding-top: 0;
+      justify-content: space-between;
     }
     &__list {
       grid-template-columns: repeat(2, calc(100% / 2 - 20px));
@@ -151,6 +157,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: auto;
       &-title {
         max-width: 200px;
         font-family: 'MADE Mirage';
@@ -160,11 +167,11 @@
         line-height: 120%;
         text-align: center;
         margin-bottom: 47px;
+        animation-delay: 0.5s;
       }
       &-text {
-        max-width: 328px;
-
-        font-family: 'Montserrat';
+        max-width: 400px;
+        font-family: 'Montserrat Regular';
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
@@ -173,14 +180,19 @@
         margin-bottom: 40px;
       }
       &-bottom {
-        flex-grow: 1;
+        flex-grow: 0;
         display: flex;
-        align-items: flex-end;
+        margin-top: 40px;
+        width: 100%;
+        justify-content: space-between;
+        padding-bottom: 20px;
+        align-items: center;
       }
 
       .button {
         width: 272px;
         height: 45px;
+        margin-left: 0;
       }
     }
   }

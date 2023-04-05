@@ -1,17 +1,14 @@
 import classNames from 'classnames'
 import { observer } from 'mobx-react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import GlobalState, { changeMenuState } from '../../../stores/GlobalState'
 import './index.scss'
 import { ReactComponent as Arrow } from '../../../assets/caret-right.svg'
-import fb from '../../../assets/socials/black_facebook 1.png'
-import inst from '../../../assets/socials/black_instagram 1.png'
-import tw from '../../../assets/socials/black_twitter 1.png'
-import Button from '../Button'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ContentStore from '../../../stores/ContentStore'
 
 const Navigation = observer(() => {
+  const [width, setWidth] = useState(window.innerWidth)
   const { pathname } = useLocation()
 
   useEffect(() => {
@@ -21,24 +18,20 @@ const Navigation = observer(() => {
   }, [GlobalState.isMenuOpen])
 
   useEffect(() => {
-    if (GlobalState.isMenuOpen) {
-      GlobalState.locoScroll && GlobalState.locoScroll.stop()
-    } else GlobalState.locoScroll && GlobalState.locoScroll.start()
-  }, [GlobalState.isMenuOpen])
-  if (!ContentStore.menu) return <></>
-
+    window.addEventListener('resize', () => setWidth(window.innerWidth))
+  }, [])
 
 
 
   return (
     <nav className={classNames('navigation', GlobalState.isMenuOpen && 'open')}>
-      {ContentStore.menu!.map((m: any, i: number) => (
+      {(ContentStore.menu as any)?.list?.map((m: any, i: number) => (
         <a
           key={i}
           href={m.link}
           className={classNames(
             'navigation__link',
-            pathname.includes(m.link) && 'active',
+            window.location.href.trim() == m.link.trim() && 'active',
           )}
           onClick={() => {
             window.innerWidth <= 1120 && changeMenuState()
@@ -47,43 +40,55 @@ const Navigation = observer(() => {
           {m.title} <Arrow />
         </a>
       ))}
-      {window.innerWidth <= 1024 && (
+      {width <= 1024 && (
         <>
           <div className="navigation__socials">
-            <div className="navigation__title">Follow us</div>
-            <div className="navigation__social">
-              <img src={tw} />
-              Twitter
-            </div>
-            <div className="navigation__social">
-              <img src={fb} /> Facebook
-            </div>
-            <div className="navigation__social">
-              <img src={inst} /> Instagram
-            </div>
+            <div className="navigation__title">Follow Us</div>
+            {(ContentStore.menu as any)?.follow?.map((f: any, i: number) => (
+              <div
+                key={i}
+                className="navigation__social"
+                onClick={() => window.open(f.link, '__blank')}
+              >
+                <span>
+                  <img src={f.icon} alt={f.link} />
+                </span>
+                {f.title}
+              </div>
+            ))}
           </div>
           <div className="navigation__contacts">
-            <div className="navigation__title">contact us</div>
+            <div className="navigation__title">Contact Us</div>
             <div
               className="navigation__contact"
-              onClick={() => (window.location.href = `tel:07761409077`)}
+              onClick={() =>
+                (window.location.href = `tel:${
+                  (ContentStore.menu as any)?.phone
+                }`)
+              }
             >
-              077 6140 9077
+              {(ContentStore.menu as any)?.phone}
             </div>
             <div
               className="navigation__contact"
               onClick={() =>
-                (window.location.href = `mailto:phinitytherapy@gmail.com`)
+                (window.location.href = `mailto:${
+                  (ContentStore.menu as any)?.email
+                }`)
               }
             >
-              phinitytherapy@gmail.com
+              {(ContentStore.menu as any)?.email}
             </div>
           </div>
-          <Button
-            classname="black-border p15p40"
-            text={'Book now'}
-            click={() => {}}
-          />
+          <a
+            href={(ContentStore.menu as any)?.bookLink}
+            className="black-border p15p40 button"
+            target={'__blank'}
+          >
+            <div className="button__text">
+              {(ContentStore.menu as any)?.bookTitle}
+            </div>
+          </a>
         </>
       )}
     </nav>

@@ -9,6 +9,10 @@
   &.animated {
     opacity: 1;
   }
+
+  ul {
+    margin-left: 20px;
+  }
   &__container {
     width: 100%;
     height: 100%;
@@ -22,7 +26,7 @@
     position: absolute;
     top: 0;
     left: -80px;
-    transition: 3s linear all;
+    transition: 3s ease-out all;
     z-index: 0;
   }
 
@@ -45,7 +49,7 @@
   }
 
   &__subtitle {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat SemiBold';
     font-style: normal;
     font-weight: 600;
     font-size: 18px;
@@ -63,8 +67,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    &-col {
-    }
   }
 
   &__social {
@@ -80,21 +82,41 @@
       font-size: 18px;
       line-height: 150%;
       margin-bottom: 16px;
-      text-transform: uppercase;
     }
 
     &-list {
       display: flex;
     }
-    img {
+
+    a {
+      cursor: pointer;
       &:not(:last-child) {
         margin-right: 24px;
+      }
+    }
+    svg {
+      cursor: pointer;
+      &:not(:last-child) {
+        margin-right: 24px;
+      }
+      path,
+      circle {
+        transition: 0.5s ease-out all;
+      }
+
+      &:hover {
+        path {
+          fill: #222426;
+        }
+        circle {
+          stroke: #222426;
+        }
       }
     }
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
@@ -104,20 +126,22 @@
   &__row {
     margin-top: 100px;
     display: flex;
-    justify-content: center;
     &-title {
       font-family: 'MADE Mirage';
       font-style: normal;
-      font-weight: 400;
+      font-weight: 500;
       font-size: 32px;
       line-height: 130%;
       /* identical to box height, or 42px */
-
-      text-transform: uppercase;
       margin-bottom: 32px;
     }
     &-col {
       max-width: calc(523px + 118px);
+
+      @media (min-width: 1441px) {
+        max-width: none;
+        width: calc(50% + 118px);
+      }
 
       &:first-child {
         padding-right: 118px;
@@ -142,6 +166,7 @@
     &-list {
       padding-left: 20px;
       max-width: 846px;
+      width: 100%;
 
       transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
       opacity: 0;
@@ -150,8 +175,8 @@
         opacity: 1;
       }
     }
-    &-item {
-      font-family: 'Montserrat';
+    li {
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -213,7 +238,7 @@
     }
 
     &-text {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -248,7 +273,7 @@
   @media (max-width: 1250px) {
     &__row {
       &-col {
-        max-width: calc(480px + 48px);
+        max-width: calc(50% + 48px);
         &:last-child {
           padding-left: 48px;
         }
@@ -294,10 +319,57 @@
   }
 
   @media (max-width: 900px) {
+    &__bottom {
+      padding-top: 64px;
+      flex-direction: column;
+      align-items: center;
+      .vacancy-content__text {
+        text-align: center;
+        max-width: 480px;
+      }
+      .vacancy-content__social {
+        margin-top: 64px;
+      }
+    }
+
+    &__top {
+      .vacancy-content__social-title {
+        text-align: left;
+      }
+    }
+
+    &__text {
+      &.mr56 {
+        margin-top: 26px;
+      }
+    }
+    &__social {
+      display: flex;
+      align-items: center;
+      &-title {
+        margin-bottom: 0;
+        margin-right: 16px;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 150%;
+      }
+
+      a {
+        &:not(:last-child) {
+          margin-right: 20px;
+        }
+      }
+      svg {
+        &:not(:last-child) {
+          margin-right: 20px;
+        }
+      }
+    }
     &__row {
       flex-direction: column;
       align-items: center;
       &-col {
+        max-width: 600px;
         &:first-child,
         &:last-child {
           padding: 0;
@@ -337,22 +409,6 @@
       line-height: 160%;
     }
 
-    &__social {
-      display: flex;
-      align-items: center;
-      &-title {
-        margin-bottom: 0;
-        margin-right: 16px;
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 150%;
-      }
-      img {
-        &:not(:last-child) {
-          margin-right: 20px;
-        }
-      }
-    }
     &__row {
       margin-top: 64px;
     }
@@ -364,11 +420,9 @@
         text-align: left;
         margin-bottom: 24px;
       }
-      &-item {
+      li {
         padding-left: 8px;
-        &:first-child {
-          margin-left: -28px;
-        }
+        margin-left: -28px;
       }
     }
 

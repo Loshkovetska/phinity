@@ -1,7 +1,5 @@
 import { observer } from 'mobx-react'
 import './index.scss'
-import img from '../../../../assets/hands.png'
-import img1 from '../../../../assets/unsplash_Wp7t4cWN-68 (1).png'
 import Button from '../../../common/Button'
 import { useEffect } from 'react'
 import GlobalState from '../../../../stores/GlobalState'
@@ -9,31 +7,36 @@ import ContentStore from '../../../../stores/ContentStore'
 
 const AboutPhinity = observer(() => {
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        const smooth = document.querySelector('.smooth')
-        const issues = smooth!.querySelector('.about-phinity')
-        const images = smooth!.querySelector('.about-phinity__col.images')
-        const title = smooth!.querySelector('.about-phinity__title')
-        const text = smooth!.querySelector('.about-phinity__text')
 
-        var bodyRect = smooth!.getBoundingClientRect(),
-          elemRect = issues!.getBoundingClientRect(),
-          offset = elemRect.top - bodyRect.top
+      const smooth = document.querySelector('.smooth')
+      const images = smooth!.querySelector('.about-phinity__col.images')
+      setTimeout(() => {
+        images?.classList.add('animated')
+      }, 1000)
+      setTimeout(() => {
+        window.addEventListener('scroll', () => {
+          const issues = smooth!.querySelector('.about-phinity')
 
-        if (args.scroll.y > offset - 500) {
-          images?.classList.add('animated')
-          title?.classList.add('animated')
-          text?.classList.add('animated')
+          const title = smooth!.querySelector('.about-phinity__title')
+          const text = smooth!.querySelector('.about-phinity__text')
 
-          if (window.innerWidth <= 768) {
-            const btn = smooth!.querySelector('.about-phinity .button')
-            btn?.classList.add('animated')
+          var bodyRect = smooth!.getBoundingClientRect(),
+            elemRect = issues!.getBoundingClientRect(),
+            offset = elemRect.top - bodyRect.top
+
+          if (window.scrollY > offset - 1000) {
+            title?.classList.add('animated')
+            text?.classList.add('animated')
+
+            if (window.innerWidth <= 768) {
+              const btn = smooth!.querySelector('.about-phinity .button')
+              btn?.classList.add('animated')
+            }
           }
-        }
-      })
-    }
-  }, [GlobalState.locoScroll])
+        })
+      }, 1000)
+    
+  }, [])
 
   if (!ContentStore.about.phinity) return <></>
 
@@ -43,10 +46,12 @@ const AboutPhinity = observer(() => {
         <img
           src={ContentStore.about.phinity.img1}
           className="about-phinity__img left"
+          alt={ContentStore.about.phinity.title}
         />
         <img
           src={ContentStore.about.phinity.img2}
           className="about-phinity__img right"
+          alt={ContentStore.about.phinity.title}
         />
       </div>
       <div className="about-phinity__col">
@@ -63,11 +68,15 @@ const AboutPhinity = observer(() => {
             }}
           ></div>
         </div>
-        <Button
-          text={ContentStore.about.phinity.buttonText}
-          click={() => {}}
-          classname="blue p18p40"
-        />
+        <a
+          target={'_blank'}
+          href={ContentStore.about.phinity.booklink}
+          className="blue p18p40 button"
+        >
+          <div className="button__text">
+            {ContentStore.about.phinity.buttonText}
+          </div>
+        </a>
       </div>
     </section>
   )

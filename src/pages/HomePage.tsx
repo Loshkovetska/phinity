@@ -1,44 +1,53 @@
 import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Intro from '../components/pages/home/Intro'
-import Offers from '../components/pages/home/Offers'
-import About from '../components/pages/home/About'
-import Issues from '../components/pages/home/Issues'
-import Accreditation from '../components/pages/home/Accreditation'
-import Reviews from '../components/pages/home/Reviews'
-import Servives from '../components/pages/home/Services'
-import Therapists from '../components/pages/home/Therapists'
-import Blogs from '../components/pages/home/Blogs'
-import BookBlock from '../components/pages/home/BookBlock'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import {
-  getIssues,
+// import Intro from '../components/pages/home/Intro'
+// import Offers from '../components/pages/home/Offers'
+// import About from '../components/pages/home/About'
+// import Issues from '../components/pages/home/Issues'
+// import Accreditation from '../components/pages/home/Accreditation'
+// import Reviews from '../components/pages/home/Reviews'
+// import Servives from '../components/pages/home/Services'
+// import Therapists from '../components/pages/home/Therapists'
+// import Blogs from '../components/pages/home/Blogs'
+// import BookBlock from '../components/pages/home/BookBlock'
+import DBStore, {
   getPosts,
   getReviews,
   getTherapists,
+  getVideos,
 } from '../stores/DBStore'
 import { getReviewsIO } from '../stores/GlobalState'
 import { observer } from 'mobx-react'
 import ContentStore, {
   getBookBlock,
   getHome,
-  getMenu,
+  getHomeIntro,
 } from '../stores/ContentStore'
-import Cookie from '../components/common/Cookie'
+import Videos from '../components/pages/blog/Videos'
+
+import React, { Suspense } from 'react'
+import Layout from '../components/common/Layout'
+
+const Intro = React.lazy(() => import('../components/pages/home/Intro'))
+const Offers = React.lazy(() => import('../components/pages/home/Offers'))
+const About = React.lazy(() => import('../components/pages/home/About'))
+const Issues = React.lazy(() => import('../components/pages/home/Issues'))
+const Therapists = React.lazy(() =>
+  import('../components/pages/home/Therapists'),
+)
+const Accreditation = React.lazy(() =>
+  import('../components/pages/home/Accreditation'),
+)
+
+const Reviews = React.lazy(() => import('../components/pages/home/Reviews'))
+const Servives = React.lazy(() => import('../components/pages/home/Services'))
+const Blogs = React.lazy(() => import('../components/pages/home/Blogs'))
+const BookBlock = React.lazy(() => import('../components/pages/home/BookBlock'))
+
 const HomePage = observer(() => {
+  const requestRef = useRef<any>(false)
   const [loading, setLoading] = useState(false)
   const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -48,16 +57,16 @@ const HomePage = observer(() => {
   }, [loading])
 
   useEffect(() => {
+    if (requestRef.current) return
     getPosts()
     getTherapists()
     getReviews()
-    getIssues()
     getReviewsIO()
     getBookBlock()
-    getHome().then(() => {
-      document.title = `Phinity Therapy | ${ContentStore.home.pageTitle}`
-    })
-    getMenu()
+    getVideos()
+    getHomeIntro()
+    getHome().then(() => {})
+    requestRef.current = true
   }, [])
 
   if (typeof window === 'undefined' || !window.document) {
@@ -66,36 +75,28 @@ const HomePage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
-      {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
-            <Intro />
-            <Offers />
-            <About />
-            <Issues dt={ContentStore.home.issues} />
-            <Therapists
-              therapist={ContentStore.home.therapist}
-              therapists={ContentStore.home.therapists}
-            />
-            <Accreditation accreditation={ContentStore.home.accreditation} />
-            <Reviews dt={ContentStore.home.reviews} />
-            <Servives dt={ContentStore.home.services} />
-            <Blogs />
-            <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
-      )}
-      <Cookie />
+      <Layout withScroll withFooter>
+        <Suspense fallback={<></>}>
+          <Intro />
+          <Offers />
+          <About />
+          <Issues
+            dt={ContentStore.home.issues}
+            arr={ContentStore.home.issues.list}
+          />
+          <Therapists
+            dt={DBStore.therapists}
+            therapist={ContentStore.home.therapist}
+            therapists={ContentStore.home.therapists}
+          />
+          <Accreditation accreditation={ContentStore.home.accreditation} />
+          <Reviews dt={ContentStore.home.reviews} />
+          <Servives dt={ContentStore.home.services} />
+          <Blogs arr={DBStore.posts} dt={ContentStore.home.blog} />
+          <Videos arr={DBStore.videos} dt={ContentStore.home.video} />
+          <BookBlock />
+        </Suspense>
+      </Layout>
     </>
   )
 })

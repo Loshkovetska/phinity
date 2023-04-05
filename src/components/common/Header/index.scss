@@ -1,20 +1,39 @@
 .header {
   width: 100%;
   display: flex;
+  visibility: hidden;
   align-items: center;
   padding: 4px 0;
   animation-duration: 1s;
   max-width: 1440px;
   margin: 0 auto;
+
   svg {
     cursor: pointer;
   }
 
+  &.show {
+    visibility: visible;
+
+    animation: fadeIn 1s;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
   &__logo {
-    margin-right: 97px;
+    margin-right: 41px;
     width: 122px;
     height: 58px;
     min-width: 122px;
+    position: relative;
+    cursor: pointer;
   }
 
   &__separator {
@@ -28,19 +47,19 @@
   &__search {
     width: 24px;
     height: 24px;
-    margin-right: 61px;
+    margin-right: 37px;
     cursor: pointer;
 
     position: relative;
     &::after {
       content: '';
       position: absolute;
-      bottom: -16px;
+      bottom: -8px;
       left: 0;
       height: 2px;
       width: 0;
       background: #222426;
-      transition: 0.5s ease-in-out all;
+      transition: 0.5s ease-out all;
     }
     &:hover {
       &::after {
@@ -85,6 +104,8 @@
       width: 94px;
       height: 44px;
       margin-right: 0;
+      position: relative;
+      z-index: 1;
     }
   }
 }

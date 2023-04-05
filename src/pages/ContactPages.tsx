@@ -1,36 +1,33 @@
 import { observer } from 'mobx-react'
 import { useEffect, useRef, useState } from 'react'
-import Footer from '../components/common/Footer'
-import Header from '../components/common/Header'
-import ScrollToTop from '../components/common/ScrollToTop'
-import SearchBox from '../components/common/SearchBox'
-import Intro from '../components/pages/services/Intro'
-import useLocoScroll from '../hooks/useLoco'
-import BookBlock from '../components/pages/home/BookBlock'
-import Reviews from '../components/pages/home/Reviews'
+// import Intro from '../components/pages/services/Intro'
+// import Reviews from '../components/pages/home/Reviews'
 import { getReviews } from '../stores/DBStore'
-import ContactContent from '../components/pages/contact/ContactContent'
-import Location from '../components/pages/contact/Location'
-import Contact from '../components/pages/about/Contact'
+// import ContactContent from '../components/pages/contact/ContactContent'
+// import Location from '../components/pages/contact/Location'
+// import Contact from '../components/pages/about/Contact'
 import ContentStore, {
+  getAbout,
   getBookBlock,
   getContactContent,
-  getMenu,
+  getHome,
 } from '../stores/ContentStore'
+import GlobalState, { getReviewsIO } from '../stores/GlobalState'
+import Layout from '../components/common/Layout'
+import { lazy, Suspense } from 'react'
+
+const Intro = lazy(() => import('../components/pages/services/Intro'))
+const Reviews = lazy(() => import('../components/pages/home/Reviews'))
+const ContactContent = lazy(() =>
+  import('../components/pages/contact/ContactContent'),
+)
+const Location = lazy(() => import('../components/pages/contact/Location'))
+const Contact = lazy(() => import('../components/pages/about/Contact'))
 
 const ContactPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const [service, setService] = useState<any>(null)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
 
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -44,56 +41,52 @@ const ContactPage = observer(() => {
   }
 
   useEffect(() => {
+    if (effectRef.current) return
+
     getReviews()
+    getReviewsIO()
     getBookBlock()
-    getMenu()
+    getHome()
+    getAbout()
     getContactContent().then(() => {
-      document.title = `Phinity | ${ContentStore.contact.pageTitle}`
+      setLoading(false)
     })
+    effectRef.current = true
   }, [])
 
   if (!ContentStore.contact) return <></>
 
+  let main = '',
+    vacanc = ''
+  const linksL = GlobalState.links
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+    vacanc = linksL.find((l: any) => l.id == 262).link
+  }
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withScroll>
+          <Suspense fallback={<></>}>
             <Intro
               classname="services-page contact"
-              dt={ContentStore.contact.intro}
+              dt={{
+                ...ContentStore.contact.intro,
+                buttonText: ContentStore.contact.intro.buttonText,
+                buttonLink: ContentStore.contact.intro.buttonLink,
+              }}
               links={[
-                { title: ContentStore.contact.mainPageTitle, link: '/' },
+                { title: ContentStore.contact.mainPageTitle, link: main },
                 { title: ContentStore.contact.pageTitle, link: '/contacts' },
               ]}
             />
             <ContactContent />
             <Location />
             <Reviews dt={ContentStore.contact.reviews} />
-            <>
-              {window.innerWidth > 768 ? (
-                <>
-                  <BookBlock />
-                </>
-              ) : (
-                <>
-                  <Contact dt={ContentStore.contact.contact} />
-                </>
-              )}
-            </>
-            <SearchBox />
-            <Footer />
-          </div>
-        </div>
+            <Contact dt={ContentStore.about.contact} />
+          </Suspense>
+        </Layout>
       )}
     </>
   )

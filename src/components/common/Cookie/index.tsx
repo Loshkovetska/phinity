@@ -2,52 +2,57 @@ import { observer } from 'mobx-react'
 import Button from '../Button'
 import './index.scss'
 import { ReactComponent as Close } from '../../../assets/close.svg'
-import { useEffect, useState } from 'react'
+
+import { ReactComponent as Candies } from '../../../assets/ex/Frame 32101 (1).svg'
+import { useEffect, useRef, useState } from 'react'
 import GlobalState from '../../../stores/GlobalState'
 import ContentStore, { getCookieContent } from '../../../stores/ContentStore'
+import { Link } from 'react-router-dom'
+import Cookies from 'js-cookie'
 
 const Cookie = observer(() => {
   const [isShow, setShow] = useState(false)
-  const getCookie = (name: string) => {
-    var matches = document.cookie.match(
-      new RegExp(
-        '(?:^|; )' +
-          name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
-          '=([^;]*)',
-      ),
-    )
-    return matches ? decodeURIComponent(matches[1]) : undefined
-  }
+
   useEffect(() => {
-    if (getCookie('hideModal') != 'true') {
+    if (!ContentStore.cookie) return
+    if (!Cookies.get('hideModal')) {
       setTimeout(() => {
         setShow(true)
-      }, 5000)
+      }, 1000)
     }
-  }, [])
+  }, [ContentStore.cookie])
 
   useEffect(() => {
     if (isShow) {
-      GlobalState.locoScroll && GlobalState.locoScroll.stop()
       document.querySelector('.cookie')?.classList.add('anim')
-      document.body.classList.add('hidden')
     } else {
-      GlobalState.locoScroll && GlobalState.locoScroll.start()
       document.querySelector('.cookie')?.classList.remove('anim')
-      document.body.classList.remove('hidden')
     }
-  }, [isShow, GlobalState.locoScroll])
+  }, [isShow])
+
   const accept = () => {
     document.querySelector('.cookie')?.classList.remove('anim')
-    document.cookie = 'hideModal=true'
+    if (document.cookie.length) {
+      Cookies.set('hideModal', 'true', { expires: 7 })
+    } else {
+      Cookies.set('hideModal', 'true', { expires: 7 })
+    }
     setShow(false)
   }
 
+  const requestRef = useRef<any>(false)
+
   useEffect(() => {
+    if (requestRef.current) return
     getCookieContent()
+    requestRef.current = true
   }, [])
 
-  if (!ContentStore.cookie) return <></>
+  const linksL = GlobalState.links
+  let cookie = ''
+  if (linksL) {
+    cookie = linksL.find((l: any) => l.id == 775).link
+  }
 
   return (
     <section className="cookie">
@@ -55,19 +60,25 @@ const Cookie = observer(() => {
         <div className="cookie__top">
           <Close className="cookie__close" onClick={() => setShow(false)} />
         </div>
-        <div
-          className="cookie__title"
-          dangerouslySetInnerHTML={{ __html: ContentStore.cookie.title }}
-        ></div>
-        <div
-          className="cookie__text"
-          dangerouslySetInnerHTML={{ __html: ContentStore.cookie.text }}
-        ></div>
-        <Button
-          classname="black-border p15p40"
-          click={accept}
-          text={ContentStore.cookie.buttonText}
-        />
+        <div className="cookie__content">
+          <Candies className="cookie__icon" />
+          <div
+            className="cookie__title"
+            dangerouslySetInnerHTML={{ __html: ContentStore.cookie?.title }}
+          ></div>
+          <div
+            className="cookie__text"
+            dangerouslySetInnerHTML={{ __html: ContentStore.cookie?.text }}
+          ></div>
+          <Button
+            classname="black-border p15p40"
+            click={accept}
+            text={ContentStore.cookie?.buttonText}
+          />
+          <a className="cookie__link" href={cookie}>
+            Read Cookie Policy
+          </a>
+        </div>
       </div>
     </section>
   )

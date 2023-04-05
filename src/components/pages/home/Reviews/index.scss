@@ -1,14 +1,24 @@
 .reviews {
+  max-width: 1280px;
+  margin: 0 auto;
   width: 100%;
   padding-top: 140px;
   position: relative;
   z-index: 1;
   transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
   opacity: 0;
-  margin: 0 auto;
   &.animated {
     opacity: 1;
   }
+
+  .slick-dots {
+    opacity: 0;
+
+    &.animated {
+      opacity: 1;
+    }
+  }
+
   &__title {
     font-family: 'MADE Mirage';
     font-style: normal;
@@ -30,7 +40,7 @@
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -46,35 +56,27 @@
   }
   &__list {
     display: flex;
-    margin-top: 48px;
+    margin: 48px 0 0;
+    justify-content: center;
+  }
+
+  &-list {
     overflow: hidden;
-    @media (min-width: 1440px) {
-      margin-right: -80px;
-    }
-    margin-right: -16px;
-
-    .slider {
-      width: 100%;
-
-      &__range {
-        margin: 56px auto 0;
-      }
-    }
+    margin-top: 48px;
   }
 
   &__item {
     user-select: none;
-    width: 365px;
-    min-width: 365px;
-    margin-right: 32px;
+    // max-width: 413px;
+    // min-width: 413px;
 
     border: 1px solid #222426;
     padding: 32px 20px 30px 24px;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
 
     opacity: 0;
-    transition: 0.3s all ease-in;
+    transition: 0.5s all ease;
 
     &:not(:first-child) {
       margin-left: -1px;
@@ -88,14 +90,11 @@
       font-weight: 500;
       font-size: 18px;
       line-height: 150%;
-
-      text-transform: uppercase;
-
       color: #222426;
       margin-bottom: 2px;
     }
     &-sub {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 14px;
@@ -107,19 +106,50 @@
     &-rating {
       display: flex;
       margin-bottom: 24px;
+
+      svg {
+        path {
+          transition: 0.3s ease-in-out all;
+        }
+      }
     }
     &-text {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
       line-height: 160%;
       color: #222426;
       flex-grow: 1;
+
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+    &-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 32px;
+    }
+    &-read {
+      cursor: pointer;
+      font-family: 'Montserrat Medium';
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 120%;
+      display: flex;
+      align-items: center;
+      text-decoration-line: underline;
+      margin-top: 9px;
+      svg {
+        margin-left: 4px;
+      }
     }
     &-status {
-      margin-top: 32px;
-      font-family: 'Montserrat';
+      margin-top: 16px;
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -139,23 +169,55 @@
         border-radius: 50%;
       }
     }
+
+    cursor: pointer;
+
+    &:hover {
+      background: #c1f4f3;
+
+      .reviews__item-rating {
+        svg {
+          path {
+            fill: #494b4c;
+          }
+        }
+      }
+    }
   }
 
-  .slick-slide {
-    width: calc(365px + 32px);
-    min-width: calc(365px + 32px);
-    padding: 0 16px;
-  }
+  // .slick-slide {
+  //   width: calc(413px + 20px);
+  //   min-width: calc(413px + 20px);
+  //   padding: 0 20px 0 0px;
+
+  //   &:last-child {
+  //     padding: 0 0px 0 0px;
+  //     width: calc(413px + 0px);
+  //     min-width: calc(413px + 0px);
+  //   }
+  // }
 
   .slick-list,
   .slick-track {
     display: flex;
   }
 
+  @media (max-width: 1410px) {
+    &__list {
+      width: 90%;
+      margin: 48px auto 0;
+    }
+  }
   @media (max-width: 1024px) {
     &__title {
       font-size: 48px;
       min-width: auto;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    &__list {
+      width: 100%;
     }
   }
 
@@ -166,11 +228,17 @@
       text-align: left;
       max-width: 335px;
       margin: 0 0 20px;
+      transition-duration: 1s;
     }
 
     &__text {
       font-size: 16px;
       text-align: left;
+      transition-delay: 1s;
+    }
+
+    &__item {
+      transition-duration: 0.3s;
     }
   }
 
@@ -181,6 +249,18 @@
         margin-top: 24px;
       }
     }
+
+    // .slick-slide {
+    //   width: calc(244px + 8px);
+    //   min-width: calc(244px + 8px);
+    //   padding: 0 8px 0 0px;
+
+    //   &:last-child {
+    //     padding: 0 0px 0 0px;
+    //     width: calc(244px + 0px);
+    //     min-width: calc(244px + 0px);
+    //   }
+    // }
     &__item {
       width: 244px;
       min-width: 244px;
@@ -216,6 +296,11 @@
           width: 12px;
           height: 12px;
         }
+      }
+      &-read {
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 120%;
       }
     }
   }

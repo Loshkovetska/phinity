@@ -1,17 +1,12 @@
 import { observable, runInAction } from 'mobx'
-import { createNull } from 'typescript'
-import categories from '../api/mocks/categories'
-import faqs, { Faq } from '../api/mocks/faqs'
-import images from '../api/mocks/images'
-import issues, { Issue } from '../api/mocks/issues'
-import posts, { Post } from '../api/mocks/posts'
-import reviews, { Review } from '../api/mocks/reviews'
-import services, { Service } from '../api/mocks/services'
-import symptoms from '../api/mocks/symptoms'
-import tags from '../api/mocks/tags'
-import therapists, { Therapist } from '../api/mocks/therapists'
-import { vacancies, Vacancy } from '../api/mocks/vacancies'
-import videos, { Video } from '../api/mocks/videos'
+import { Faq } from '../api/mocks/faqs'
+import { Issue } from '../api/mocks/issues'
+import { Post } from '../api/mocks/posts'
+import { Review } from '../api/mocks/reviews'
+import { Service } from '../api/mocks/services'
+import { Therapist } from '../api/mocks/therapists'
+import { Vacancy } from '../api/mocks/vacancies'
+import { Video } from '../api/mocks/videos'
 import { DOMAIN } from '../mocks/doman'
 import GlobalState from './GlobalState'
 
@@ -25,7 +20,6 @@ type DBStoreType = {
   service: Service | null
   issues: Issue[] | null
   issue: Issue | null
-  images: Array<string> | null
   tags: Array<string> | null
   categories: Array<string> | null
   videos: Array<Video> | null
@@ -33,10 +27,18 @@ type DBStoreType = {
   faqs: Array<Faq> | null
   vacancies: Array<Vacancy> | null
   vacancy: Vacancy | null
+  issuesFilters: any
+  servicesFilters: any
   symptoms: Array<{
     title: string
     text: string
   }> | null
+  popularVideos: Array<Video> | null
+  therapistsFilter: any
+  popularPosts: Array<Post> | null
+  videosFilter: any
+  postCategories: Array<any> | null
+  worksCategories: Array<any> | null
 }
 
 const DBStore: DBStoreType = observable({
@@ -58,9 +60,53 @@ const DBStore: DBStoreType = observable({
   vacancies: null,
   vacancy: null,
   symptoms: null,
+  issuesFilters: null,
+  servicesFilters: null,
+  videosFilter: null,
+  popularVideos: null,
+  therapistsFilter: null,
+  popularPosts: null,
+  postCategories: null,
+  worksCategories: null,
 })
 
 export default DBStore
+
+export const getPopularVideos = async () => {
+  try {
+    const fd = new FormData()
+    fd.append('status', 'popular-videos')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+
+    runInAction(() => {
+      DBStore.popularVideos = response
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const getPopularPosts = async () => {
+  try {
+    const fd = new FormData()
+    fd.append('status', 'popular-post')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+
+    runInAction(() => {
+      DBStore.popularPosts = response
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 export const getReviews = async () => {
   try {
@@ -96,17 +142,34 @@ export const getPosts = async () => {
   }
 }
 
-export const getPost = async (id: number) => {
+export const getPost = async (link: string) => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'posts')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    const fd = new FormData()
+    fd.append('status', 'post')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
     runInAction(() => {
-      DBStore.post = posts.find((p) => p.id == id) || null //response
+      DBStore.post = response.find((p: any) => p.link == link) || null
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const getWorkFilters = async () => {
+  try {
+    const fd = new FormData()
+    fd.append('status', 'category-vacancies')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+    runInAction(() => {
+      DBStore.worksCategories = response
     })
   } catch (e) {
     console.log(e)
@@ -129,17 +192,17 @@ export const getTherapists = async () => {
     console.log(e)
   }
 }
-export const getTherapist = async (id: number) => {
+export const getTherapist = async (id: string) => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    const fd = new FormData()
+    fd.append('status', 'therapists')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
     runInAction(() => {
-      DBStore.therapist = therapists.find((t) => t.id == id) || null //response
+      DBStore.therapist = response.find((t: any) => t.link == id) || null
     })
   } catch (e) {
     console.log(e)
@@ -164,102 +227,124 @@ export const getServices = async () => {
   }
 }
 
-export const getService = async (id: number) => {
+export const filterServices = async (st: any) => {
   try {
     const fd = new FormData()
-    fd.append('id', id.toString())
-    fd.append('status', 'services-single')
+    fd.append('dt', JSON.stringify(st))
+    fd.append('status', 'filter-services')
     let request = await fetch(DOMAIN + 'react/', {
       method: 'POST',
       body: fd,
     })
     let response = await request.json()
     runInAction(() => {
-      DBStore.service = response || null
+      DBStore.services = response
     })
   } catch (e) {
     console.log(e)
   }
 }
 
-export const getTherapistsByService = async (id: number) => {
+export const filterTherapists = async (st: any) => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
-    runInAction(() => {
-      DBStore.therapists = therapists.filter((s) => s.service_id == id) || null //response
+    const fd = new FormData()
+    fd.append('dt', JSON.stringify(st))
+    fd.append('status', 'filter-therapists')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
     })
-  } catch (e) {
-    console.log(e)
-  }
-}
-export const getIssuesByService = async (id: number) => {
-  try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    let response = await request.json()
     runInAction(() => {
-      DBStore.issues = issues.slice(0, 6) || null //response
+      DBStore.therapists = response
     })
   } catch (e) {
     console.log(e)
   }
 }
 
-export const getServicesByTherapists = () => {
+export const getTherapistsFilters = async () => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    const fd = new FormData()
+    fd.append('status', 'category-therapists')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
     runInAction(() => {
-      DBStore.services = services.slice(0, 10) //response
+      DBStore.therapistsFilter = response
     })
   } catch (e) {
     console.log(e)
   }
 }
 
-export const getServicesByIssue = async (id: number) => {
+export const getServicesFilters = async () => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    const fd = new FormData()
+    fd.append('status', 'f-services')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
     runInAction(() => {
-      DBStore.services = services.slice(0, 18) //response
+      DBStore.servicesFilters = response
     })
   } catch (e) {
     console.log(e)
   }
 }
 
-export const getImages = async () => {
+export const getBlogCategories = async () => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    const fd = new FormData()
+    fd.append('status', 'category-post')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
     runInAction(() => {
-      DBStore.images = images //response
+      DBStore.postCategories = response.sort((a: any, b: any) =>
+        a.localeCompare(b),
+      )
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const getVideosFilters = async () => {
+  try {
+    const fd = new FormData()
+    fd.append('status', 'category-video')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+    runInAction(() => {
+      DBStore.videosFilter = response
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const getService = async (link: string) => {
+  try {
+    const fd = new FormData()
+    fd.append('link', link.toString())
+    fd.append('status', 'services')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+    runInAction(() => {
+      DBStore.service = response.find((r: any) => r.link == link)
     })
   } catch (e) {
     console.log(e)
@@ -283,7 +368,85 @@ export const getIssues = async () => {
   }
 }
 
-export const getIssue = async (id: number) => {
+export const getIssuesFilters = async () => {
+  try {
+    const fd = new FormData()
+    fd.append('status', 'f-issues')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+    runInAction(() => {
+      DBStore.issuesFilters = response
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const filterIssues = async (st: any) => {
+  try {
+    const fd = new FormData()
+    fd.append('dt', JSON.stringify(st))
+    fd.append('status', 'filter-issues')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+    runInAction(() => {
+      DBStore.issues = response
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const filterVideos = async (st: any) => {
+  try {
+    const fd = new FormData()
+    fd.append('dt', JSON.stringify(st))
+    fd.append('status', 'filter-videos')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+    runInAction(() => {
+      DBStore.videos = response
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const filterPosts = async (st: any) => {
+  try {
+    const fd = new FormData()
+    fd.append('status', 'post')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+
+    const res: any = []
+    response.forEach((r: any) => {
+      if (st.includes(r.cat)) {
+        res.push(r)
+      }
+    })
+
+    runInAction(() => {
+      DBStore.posts = res
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const getIssue = async (id: string) => {
   try {
     const fd = new FormData()
     fd.append('status', 'issues')
@@ -293,49 +456,7 @@ export const getIssue = async (id: number) => {
     })
     let response = await request.json()
     runInAction(() => {
-      DBStore.issue = response.find((i: any) => i.id == id) || createNull
-    })
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-export const sortTherapists = async (sort: any, total: number) => {
-  try {
-    if (!total) {
-      runInAction(() => {
-        GlobalState.theraFilterCount = total
-        GlobalState.sortThera = {
-          jobCat: Array(),
-          approach: Array(),
-          exper: Array(),
-          time: Array(),
-          locate: Array(),
-        }
-      })
-      runInAction(() => {
-        DBStore.therapists = therapists
-      })
-
-      return
-    }
-    const fd = new FormData()
-    fd.append('text', JSON.stringify(sort))
-    fd.append('status', 'sort')
-    // let response = await fetch('/', {
-    //   method: 'POST',
-    //   body: new FormData(),
-    // })
-
-    // let res = await response.json();
-
-    runInAction(() => {
-      GlobalState.theraFilterCount = total
-      GlobalState.sortThera = sort
-    })
-
-    runInAction(() => {
-      DBStore.therapists = therapists.slice(0, 3)
+      DBStore.issue = response.find((i: any) => i.link == id) || null
     })
   } catch (e) {
     console.log(e)
@@ -410,6 +531,23 @@ export const getVacancies = async () => {
   }
 }
 
+export const filterVacancies = async (st: any) => {
+  try {
+    const fd = new FormData()
+    fd.append('dt', JSON.stringify(st))
+    fd.append('status', 'filter-vacancies')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+    runInAction(() => {
+      DBStore.vacancies = response
+    })
+  } catch (e) {
+    console.log(e)
+  }
+}
 export const getVideos = async () => {
   try {
     const fd = new FormData()
@@ -427,34 +565,35 @@ export const getVideos = async () => {
   }
 }
 
-export const getVideo = async (id: number) => {
+export const getVideo = async (id: string) => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    const fd = new FormData()
+    fd.append('status', 'videos')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
+
     runInAction(() => {
-      DBStore.video = videos.find((v) => v.id == id) || null //response
+      DBStore.video = response.find((v: any) => v.link == id) || null
     })
   } catch (e) {
     console.log(e)
   }
 }
 
-export const getVacancy = async (id: number) => {
+export const getVacancy = async (link: string) => {
   try {
-    // const fd = new FormData()
-    // fd.append('status', 'therapists')
-    // let request = await fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // })
-    // let response = await request.json()
+    const fd = new FormData()
+    fd.append('status', 'vacancies')
+    let request = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
+    let response = await request.json()
     runInAction(() => {
-      DBStore.vacancy = vacancies.find((v) => v.id == id) || null //response
+      DBStore.vacancy = response.find((v: any) => v.link == link) || null
     })
   } catch (e) {
     console.log(e)
@@ -464,6 +603,7 @@ export const getVacancy = async (id: number) => {
 export const getSymptoms = async (id: number) => {
   try {
     const fd = new FormData()
+    fd.append('id', id.toString())
     fd.append('status', 'symptoms')
     let request = await fetch(DOMAIN + 'react/', {
       method: 'POST',

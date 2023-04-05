@@ -1,37 +1,31 @@
-import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import BookBlock from '../components/pages/home/BookBlock'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import {
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import DBStore, {
+  filterTherapists,
   getCategories,
   getReviews,
-  getServices,
   getTherapists,
+  getTherapistsFilters,
 } from '../stores/DBStore'
-import Reviews from '../components/pages/home/Reviews'
-import Therapists from '../components/pages/therapists/Therapists'
 import { observer } from 'mobx-react'
 import ContentStore, {
   getBookBlock,
-  getMenu,
   getTherapistsContent,
 } from '../stores/ContentStore'
+import GlobalState, { getReviewsIO } from '../stores/GlobalState'
+import Filter from '../components/pages/therapists/Filter'
+import Layout from '../components/common/Layout'
+
+const BookBlock = lazy(() => import('../components/pages/home/BookBlock'))
+const Reviews = lazy(() => import('../components/pages/home/Reviews'))
+const Therapists = lazy(() =>
+  import('../components/pages/therapists/Therapists'),
+)
 
 const TherapistsPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-    getMenu()
-  }, [])
+  const [filter, setFilter] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -40,14 +34,29 @@ const TherapistsPage = observer(() => {
     }
   }, [loading])
 
+  let therap = ''
+  const linksL = GlobalState.links
+  if (linksL) {
+    therap = linksL.find((l: any) => l.id == 268).link
+  }
+
   useEffect(() => {
+    if (effectRef.current) return
+
+    getReviewsIO()
+    getTherapistsFilters()
     getReviews()
-    getTherapists()
-    getTherapistsContent().then(() => {
-      document.title = `Phinity Therapy | ${ContentStore.therapists.pageTitle}`
-    })
     getBookBlock()
     getCategories()
+    getTherapists().then(() => {
+      if (DBStore.therapists?.length == 1) {
+        window.location.href = `${therap}/${DBStore.therapists[0].link}`
+      }
+    })
+    getTherapistsContent().then(() => {
+      setLoading(false)
+    })
+    effectRef.current = true
   }, [])
 
   if (typeof window === 'undefined' || !window.document) {
@@ -56,25 +65,34 @@ const TherapistsPage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <Therapists />
             <Reviews dt={ContentStore.therapists.reviews} />
             <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
+      <Filter
+        params={[{ title: 'Category', list: DBStore.therapistsFilter }]}
+        setFilter={(value) => {
+          if (value == null) {
+            setFilter(null)
+            getTherapists()
+          } else {
+            const st: any = {}
+            ;[{ title: 'Category', list: DBStore.therapistsFilter }].forEach(
+              (e: any, i: number) => {
+                st[e.title.replaceAll(' ', '')] = value[`p${i}`]
+              },
+            )
+
+            setFilter(st)
+            filterTherapists(st)
+          }
+        }}
+      />
     </>
   )
 })

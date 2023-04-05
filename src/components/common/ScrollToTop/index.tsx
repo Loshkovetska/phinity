@@ -15,6 +15,7 @@ const ScrollToTop = observer(({ headerContent }: { headerContent: any }) => {
     runInAction(() => {
       GlobalState.isMenuOpen = false
       GlobalState.isSearchOpen = false
+      GlobalState.filterCount = 0
     })
     if (headerContent && headerContent.current) {
       ;(headerContent.current as Element).scrollIntoView()

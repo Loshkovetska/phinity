@@ -5,94 +5,238 @@ import { ReactComponent as Arrow } from '../../../../assets/caret-right.svg'
 import { Link } from 'react-router-dom'
 import { outputDate } from '../../../../methods/output'
 import { observer } from 'mobx-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import GlobalState from '../../../../stores/GlobalState'
 import DBStore from '../../../../stores/DBStore'
 import { ReactComponent as Vector } from '../../../../assets/Vector 7.svg'
 import ContentStore from '../../../../stores/ContentStore'
-const Blogs = observer(({ title = 'Our Blogs' }: { title?: string }) => {
-  const navigate = useNavigate()
+import { Post } from '../../../../api/mocks/posts'
+import CheckerItemsInsideCont from '../../../common/CheckerItemsInsideCont'
+import CustomSlider from '../../../common/CustomSlider'
 
-  useEffect(() => {
-    if (window.innerWidth <= 480) {
-      const container = document.querySelector('.blogs')
-      const vect = document.querySelector(`.blogs__vector`)
-      const smooth = document.querySelector('.smooth')
-      var bodyRect = smooth!.getBoundingClientRect(),
-        elemRect = vect!.getBoundingClientRect(),
-        contRect = container!.getBoundingClientRect(),
-        offset = contRect.top - bodyRect.top,
-        offsetBottom = contRect.top + contRect.height / 2
+const Blogs = observer(
+  ({ dt, arr }: { dt: any; arr: Array<Post> | null | undefined }) => {
+    useEffect(() => {
+      if (window.innerWidth <= 480) {
+        const container = document.querySelector('.blogs')
+        const vect = document.querySelector(`.blogs__vector`)
+        const smooth = document.querySelector('.smooth')
+        if (!vect) return
+        var bodyRect = smooth!.getBoundingClientRect(),
+          elemRect = vect!.getBoundingClientRect(),
+          contRect = container!.getBoundingClientRect(),
+          offset = contRect.top - bodyRect.top,
+          offsetBottom = contRect.top + contRect.height / 2
 
-      GlobalState.locoScroll &&
-        GlobalState.locoScroll.on('scroll', (args: any) => {
-          if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
             ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-              args.scroll.y - offset
+              window.scrollY - offset
             }px, 0)`
           }
         })
+      }
+    }, [arr])
+
+    const getCountByCat = (cat: string) => {
+      return arr?.filter((d) => d.cat == cat)?.length || 0
     }
-  }, [GlobalState.locoScroll])
-  if (!DBStore.posts) return <></>
 
-  if (!ContentStore.home.blog) return <></>
+    const [width, setWidth] = useState(window.innerWidth)
 
-  const { blog } = ContentStore.home
+    useEffect(() => {
+      window.addEventListener('resize', () => setWidth(window.innerWidth))
+    }, [])
 
-  const posts = DBStore.posts.slice(0, DBStore.posts.length)
-  return (
-    <section className="blogs">
-      <Vector className="blogs__vector" />
-      <div className="blogs__container">
-        <div className="blogs__top">
-          <div
-            className="blogs__title"
-            dangerouslySetInnerHTML={{ __html: blog.title }}
-          ></div>
-          {window.innerWidth > 1024 && (
-            <Button
-              classname="black-border p18p40"
-              text={
-                <>
-                  {blog.buttonTitle} <Arrow />
-                </>
+    // if (!arr || !arr.length) return <></>
+    const posts = arr?.slice(0, arr.length)
+
+    const links = GlobalState.links
+    let blog = ''
+    if (links) {
+      blog = links.find((l: any) => l.id == 272).link
+    }
+
+    return (
+      <section className="blogs">
+        <Vector className="blogs__vector" />
+        <div className="blogs__container">
+          <div className="blogs__top">
+            <div
+              className="blogs__title"
+              dangerouslySetInnerHTML={{ __html: dt?.title }}
+            ></div>
+            {window.innerWidth > 1024 && (
+              <a href={blog} className="button black-border p18p40">
+                <div className="button__text">
+                  {dt?.buttonTitle} <Arrow />
+                </div>
+              </a>
+            )}
+          </div>
+          {dt && (
+            <CheckerItemsInsideCont
+              container=".blogs"
+              child={'.blogs__item'}
+              slider={
+                <div className="blogs__list slider-blogs">
+                  <CustomSlider
+                    autoPlay
+                    countItems={posts?.length || dt.length}
+                    width={305}
+                    block="videos"
+                    slidesToShow={width >= 900 ? 2 : 1}
+                    slidesToScroll={width >= 900 ? 2 : 1}
+                  >
+                    {posts
+                      ?.sort(
+                        (a: any, b: any) =>
+                          new Date(b.date).getTime() -
+                          new Date(a.date).getTime(),
+                      )
+                      .slice(0, 20)
+                      .map((b: any, i: number) => (
+                        <div
+                          className="blogs__item"
+                          key={i}
+                          onTouchEnd={(e) => {
+                            const items = document.querySelectorAll(
+                              '.blogs__list.slider-blogs .blogs__item',
+                            )
+                            if (items) {
+                              items[i].classList.add('disable-post')
+
+                              setTimeout(() => {
+                                items[i].classList.remove('disable-post')
+                              }, 300)
+                            }
+                            // alert('touch-canc '+e);
+                          }}
+                          onTouchCancel={(e) => {
+                            const items = document.querySelectorAll(
+                              '.blogs__list.slider-blogs .blogs__item',
+                            )
+                            if (items) {
+                              items[i].classList.add('disable-post')
+
+                              setTimeout(() => {
+                                items[i].classList.remove('disable-post')
+                              }, 300)
+                            }
+                            // alert('touch-canc '+e);
+                          }}
+                        >
+                          <div className="blogs__item-date">
+                            {b.author?.name && (
+                              <>
+                                {' '}
+                                <a
+                                  href={b.author.link}
+                                  target={
+                                    b.author.link?.includes('https')
+                                      ? '_blank'
+                                      : ''
+                                  }
+                                >
+                                  {b.author.name}
+                                </a>{' '}
+                                &bull;{' '}
+                              </>
+                            )}
+                            {outputDate(b.date)}{' '}
+                          </div>
+                          <a href={`${blog}/${b.link}`} className="blogs__item-top">
+                            <div className="blogs__item-img">
+                              <img src={b.img || ''} alt={b.title} />
+                            </div>
+                            <div className="blogs__item-title">{b.title}</div>
+                          </a>{' '}
+                          <a className="blogs__item-text" href={`${blog}/${b.link}`}>
+                            <p
+                              dangerouslySetInnerHTML={{ __html: b.shortInfo }}
+                            ></p>
+                          </a>
+                          <div className="blogs__item-bottom">
+                            <div className="blogs__item-cat">
+                              <p>Category: {b.cat + ' '} </p>{' '}
+                              <span>({getCountByCat(b.cat)})</span>
+                            </div>
+                            <a className="blogs__item-more" href={`${blog}/${b.link}`}>
+                              Read more <Arrow />
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                  </CustomSlider>
+                </div>
               }
-              click={() => navigate('/blog')}
+              list={
+                <div className="blogs__list">
+                  {posts
+                    ?.sort(
+                      (a: any, b: any) =>
+                        new Date(b.date).getTime() - new Date(a.date).getTime(),
+                    )
+                    .slice(0, 20)
+                    .map((b: any, i: number) => (
+                      <div className="blogs__item" key={i}>
+                        <div className="blogs__item-date">
+                          {b.author?.name && (
+                            <>
+                              {' '}
+                              <a
+                                href={b.author.link}
+                                target={
+                                  b.author.link?.includes('https')
+                                    ? '_blank'
+                                    : ''
+                                }
+                              >
+                                {b.author.name}
+                              </a>{' '}
+                              &bull;{' '}
+                            </>
+                          )}
+                          {outputDate(b.date)}{' '}
+                        </div>
+                        <a href={`${blog}/${b.link}`} className="blogs__item-top">
+                          <div className="blogs__item-img">
+                            <img src={b.img || ''} alt={b.title} />
+                          </div>
+                          <div className="blogs__item-title">{b.title}</div>
+                        </a>{' '}
+                        <a className="blogs__item-text" href={`${blog}/${b.link}`}>
+                          <p
+                            dangerouslySetInnerHTML={{ __html: b.shortInfo }}
+                          ></p>
+                        </a>
+                        <div className="blogs__item-bottom">
+                          <div className="blogs__item-cat">
+                            <p>Category: {b.cat + ' '} </p>{' '}
+                            <span>({getCountByCat(b.cat)})</span>
+                          </div>
+                          <a className="blogs__item-more" href={`${blog}/${b.link}`}>
+                            Read more <Arrow />
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              }
+              countOfChidlren={posts?.length || dt.length}
             />
           )}
+          {window.innerWidth <= 1024 && (
+            <a href={blog} className="button black-border p18p40">
+              <div className="button__text">
+                {dt?.buttonTitle} <Arrow />
+              </div>
+            </a>
+          )}
         </div>
-        <div className="blogs__list">
-          {posts
-            .sort(
-              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-            )
-            .slice(0, 2)
-            .map((b, i) => (
-              <Link className="blogs__item" to={`/blog/${b.id}`} key={i}>
-                <div className="blogs__item-date">{outputDate(b.date)}</div>
-                <div className="blogs__item-title">{b.title}</div>
-                <div className="blogs__item-text">{b.shortInfo}</div>
-                <div className="blogs__item-more">
-                  Read more <Arrow />
-                </div>
-              </Link>
-            ))}
-        </div>
-        {window.innerWidth <= 1024 && (
-          <Button
-            classname="black-border p18p40"
-            text={
-              <>
-                {blog.buttonTitle} <Arrow />
-              </>
-            }
-            click={() => navigate('/blog')}
-          />
-        )}
-      </div>
-    </section>
-  )
-})
+      </section>
+    )
+  },
+)
 
 export default Blogs

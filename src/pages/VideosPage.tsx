@@ -1,42 +1,32 @@
-import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Reviews from '../components/pages/home/Reviews'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
+import { lazy, useEffect, useRef, useState } from 'react'
 import DBStore, {
   getReviews,
-  getPosts,
   getVideos,
-  getPost,
+  getPopularVideos,
+  getVideosFilters,
+  filterVideos,
 } from '../stores/DBStore'
-import BookBlock from '../components/pages/home/BookBlock'
-import { useParams } from 'react-router'
 import { observer } from 'mobx-react'
-import VideosContent from '../components/pages/videos/VideosContent'
-import VideosList from '../components/pages/videos/VideosiList'
 import ContentStore, {
   getBookBlock,
-  getMenu,
-  getVideoContent,
+  getHome,
   getVideosContent,
 } from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import Filter from '../components/pages/therapists/Filter'
+import Layout from '../components/common/Layout'
+
+
+const BookBlock = lazy(() => import('../components/pages/home/BookBlock'))
+const Reviews = lazy(()=>import('../components/pages/home/Reviews'))
+const NewVideos = lazy(() => import('../components/pages/videos/NewVideos'))
+const PopularVideos = lazy(() => import('../components/pages/videos/PopularVideos'))
 
 const VideosPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const { id: id } = useParams()
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
+  const [filter, setFilter] = useState<any>(null)
 
-    getMenu()
-  }, [])
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
 
   useEffect(() => {
     if (!loading) {
@@ -47,16 +37,29 @@ const VideosPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
+    if (effectRef.current) return
+
     getReviews()
-    getVideos()
-    getBookBlock();
+    getBookBlock()
+    getReviewsIO()
+    getHome()
+    getPopularVideos()
+    getVideosFilters()
+    getVideosContent().then(() => {})
+    getVideos().then(() => {
+      setLoading(false)
+    })
+    effectRef.current = true
   }, [])
 
+  const [show, setShow] = useState(false)
+
   useEffect(() => {
-    getVideosContent().then(() => {
-      document.title = `Phinity | ${ContentStore.videos.pageTitle}`
-    })
-  }, [])
+    if (!loading) return
+    setTimeout(() => {
+      setShow(true)
+    }, 2000)
+  }, [loading])
 
   if (typeof window === 'undefined' || !window.document) {
     return <></>
@@ -64,26 +67,34 @@ const VideosPage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
-            <VideosContent />
-            <VideosList />
-            <Reviews dt={ContentStore.videos.reviews} />
-            <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+        <Layout>
+          <NewVideos />
+          {show && (
+            <>
+              <PopularVideos content={ContentStore.videos.video} />
+              <Reviews dt={ContentStore.videos.reviews} />
+            </>
+          )}
+          <BookBlock />
+        </Layout>
       )}
+      <Filter
+        params={[DBStore.videosFilter] || null}
+        setFilter={(value) => {
+          if (value == null) {
+            setFilter(null)
+            getVideos()
+          } else {
+            const st: any = {}
+            ;[DBStore.videosFilter]?.forEach((e: any, i: number) => {
+              st[e.title.replaceAll(' ', '')] = value[`p${i}`]
+            })
+            setFilter(st)
+            filterVideos(st)
+          }
+        }}
+      />
     </>
   )
 })

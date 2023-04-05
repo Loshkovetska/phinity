@@ -1,13 +1,15 @@
 import { observer } from 'mobx-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import GlobalState from '../../../../stores/GlobalState'
 import Map from '../../../common/Map'
 import './index.scss'
 import { ReactComponent as VectorDesk } from '../../../../assets/Vector 9.svg'
 import { ReactComponent as VectorMobile } from '../../../../assets/Vector 4.svg'
 import ContentStore from '../../../../stores/ContentStore'
+import classNames from 'classnames'
 
 const Location = observer(() => {
+  const [coords, setCoords] = useState<any>(null)
   useEffect(() => {
     const container = document.querySelector('.location')
     const vect = document.querySelector(
@@ -20,17 +22,29 @@ const Location = observer(() => {
       offset = contRect.top - bodyRect.top,
       offsetBottom = contRect.bottom - contRect.height / 2
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+        requestAnimationFrame(() => {
           ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
+            window.scrollY - offset
           }px, 0)`
-        }
-      })
-  }, [GlobalState.locoScroll])
+        })
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!ContentStore.contact.location?.list) return
+    setCoords({
+      lat: ContentStore.contact.location?.list[0].lat,
+      lng: ContentStore.contact.location?.list[0].lng,
+      maplink: ContentStore.contact.location?.list[0].maplink,
+    })
+  }, [ContentStore.contact.location?.list])
 
   if (!ContentStore.contact.location) return <></>
+  const list = ContentStore.contact.location.list
+
   return (
     <section className="location">
       <VectorDesk className="location__vector desk" />
@@ -46,29 +60,62 @@ const Location = observer(() => {
             ></div>
           </div>
           <div className="location__col-block">
-            <div style={{ overflow: 'hidden' }}>
-              <div className="location__item">
-                <div
-                  className="location__col-title"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      window.innerWidth > 768
-                        ? ContentStore.contact.location.subtitleDesk
-                        : ContentStore.contact.location.subtitleMob,
-                  }}
-                ></div>
-                <div
-                  className="location__col-text"
-                  dangerouslySetInnerHTML={{
-                    __html: ContentStore.contact.location.address,
-                  }}
-                ></div>
-              </div>
-            </div>
+            {/* ContentStore.contact.location. */}
+            {list &&
+              coords &&
+              list.map((l: any, i: number) => (
+                <div style={{ overflow: 'hidden' }} key={i}>
+                  <div
+                    className="location__item"
+                    onClick={() => {
+                      document
+                        .querySelector('.location__map')
+                        ?.classList.add('hidden-map')
+
+                      setTimeout(() => {
+                        document
+                          .querySelector('.location__map')
+                          ?.classList.remove('hidden-map')
+                      }, 700)
+                      setCoords({ lat: l.lat, lng: l.lng, maplink: l.maplink })
+                    }}
+                  >
+                    <div
+                      className={classNames(
+                        'location__col-title',
+                        coords.lat == l.lat && coords.lng == l.lng && 'active',
+                      )}
+                      dangerouslySetInnerHTML={{
+                        __html: l.subtitle,
+                      }}
+                    ></div>
+                    <div
+                      className="location__col-text"
+                      dangerouslySetInnerHTML={{
+                        __html: l.address,
+                      }}
+                    ></div>
+                    {/* <div
+                    className="location__col-text"
+                    dangerouslySetInnerHTML={{
+                      __html: ContentStore.contact.location.address,
+                    }}
+                  ></div> */}
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
         <div className="location__map">
-          <Map location={ContentStore.contact.location.coords} />
+          {coords ? (
+            <Map
+              link={coords.maplink}
+              location={coords}
+              zoom={+ContentStore.contact.location.zoom || 18}
+            />
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </section>

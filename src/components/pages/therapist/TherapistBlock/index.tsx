@@ -6,33 +6,50 @@ import GlobalState from '../../../../stores/GlobalState'
 import ContentStore from '../../../../stores/ContentStore'
 const TherapistBlock = observer(() => {
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      const smooth = document.querySelector('.smooth'),
-        block = document.querySelector('.therapist-block'),
-        prev = block?.previousElementSibling,
+    const smooth = document.querySelector('.smooth'),
+      block = document.querySelector('.therapist-block')
+
+    setTimeout(() => {
+      block?.classList.add('animated')
+      const prev = block?.previousElementSibling,
         main = document.querySelector('.therapist-block__main'),
         sub = document.querySelector('.therapist-block__sub'),
         items2 = document.querySelectorAll('.therapist-block__item')
 
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        var bodyRect = smooth!.getBoundingClientRect(),
-          elemRect = prev!.getBoundingClientRect(),
-          offset = elemRect.bottom
-        if (args.scroll.y > offset - 500) {
-          block?.classList.add('animated')
-        }
+      ;(main as any).classList.add('animated')
 
-        if (args.scroll.y > offset - 300) {
-          ;(main as any).classList.add('animated')
-          items2.forEach((i, id) => {
-            i?.classList.add('animated')
-            ;(i as HTMLElement).style.transitionDelay = `${id / 6 + 1}s`
-          })
-          ;(sub as any).classList.add('animated')
-        }
+      items2.forEach((i, id) => {
+        i?.classList.add('animated')
+        ;(i as HTMLElement).style.transitionDelay = `${id / 6 + 0.5}s`
       })
-    }
-  }, [GlobalState.locoScroll])
+      ;(sub as any).classList.add('animated')
+    }, 1000)
+
+    // const
+    //   prev = block?.previousElementSibling,
+    //   main = document.querySelector('.therapist-block__main'),
+    //   sub = document.querySelector('.therapist-block__sub'),
+    //   items2 = document.querySelectorAll('.therapist-block__item')
+
+    // window.addEventListener('scroll', (args: any) => {
+    //   var bodyRect = smooth!.getBoundingClientRect(),
+    //     elemRect = prev!.getBoundingClientRect(),
+    //     offset = elemRect.bottom
+    //   // if (window.scrollY > offset - 1500) {
+    //   //   block?.classList.add('animated')
+    //   // }
+
+    //   if (window.scrollY > offset - 1500) {
+    //     ;(main as any).classList.add('animated')
+
+    //     items2.forEach((i, id) => {
+    //       i?.classList.add('animated')
+    //       ;(i as HTMLElement).style.transitionDelay = `${id / 6 + 0.5}s`
+    //     })
+    //     ;(sub as any).classList.add('animated')
+    //   }
+    // })
+  }, [ContentStore.therapist.block])
 
   useEffect(() => {
     if (window.innerWidth > 768) {
@@ -45,16 +62,15 @@ const TherapistBlock = observer(() => {
         offsetBottom =
           elemRect.bottom - vect!.getBoundingClientRect().height / 2
 
-      GlobalState.locoScroll &&
-        GlobalState.locoScroll.on('scroll', (args: any) => {
-          if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-              args.scroll.y - offset
-            }px, 0)`
-          }
-        })
+      window.addEventListener('scroll', (args: any) => {
+        if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+            window.scrollY - offset
+          }px, 0)`
+        }
+      })
     }
-  }, [GlobalState.locoScroll])
+  }, [ContentStore.therapist.block])
   return (
     <section className="therapist-block">
       <Vector9 className="therapist-block__vector" />
@@ -68,7 +84,7 @@ const TherapistBlock = observer(() => {
           ></p>
         </div>
         <div className="therapist-block__list">
-          {ContentStore.therapist.block.list.map((bl, i) => (
+          {ContentStore.therapist.block.list.map((bl:any, i) => (
             <div className="therapist-block__item" key={i}>
               <div className="therapist-block__item-num">0{i + 1}</div>
               <div
@@ -82,7 +98,7 @@ const TherapistBlock = observer(() => {
             </div>
           ))}
         </div>
-        <div style={{ overflow: 'hidden' }}>
+        <div style={{ overflow: 'hidden', width: '100%' }}>
           <div
             className="therapist-block__sub up"
             dangerouslySetInnerHTML={{

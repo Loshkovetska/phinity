@@ -22,9 +22,6 @@
     font-size: 18px;
     line-height: 150%;
     /* or 27px */
-
-    text-transform: uppercase;
-
     /* Phinity black */
 
     color: #222426;
@@ -44,15 +41,17 @@
 
   &__list {
     display: flex;
-    width: 847px;
+    width: 100%;
     overflow: hidden;
+
+    justify-content: space-between;
   }
 
   &__vector {
     position: absolute;
     left: -80px;
     top: 100px;
-    transition: 3s linear transform;
+    transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
   }
 
   &__item {
@@ -70,9 +69,6 @@
       font-weight: 400;
       font-size: 18px;
       line-height: 150%;
-
-      text-transform: uppercase;
-
       color: #222426;
 
       opacity: 0.8;
@@ -83,7 +79,6 @@
       font-weight: 500;
       font-size: 24px;
       line-height: 150%;
-      text-transform: uppercase;
       position: relative;
       padding-bottom: 4px;
 
@@ -98,14 +93,14 @@
     }
     &-text {
       flex-grow: 1;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
       line-height: 160%;
       display: flex;
       align-items: flex-end;
-
+      max-width: 250px;
       opacity: 0.8;
     }
 
@@ -118,14 +113,27 @@
 
     transition: 1s transform cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
-    &:first-child {
+    // &:first-child {
+    //   transform: translateY(200%);
+    // }
+    // &:nth-child(2) {
+    //   transform: translateY(-200%);
+    // }
+    // &:nth-child(3) {
+    //   transform: translateY(200%);
+    // }
+    // &:nth-child(4) {
+    //   transform: translateY(-200%);
+    // }
+    // &:last-child {
+    //   transform: translateY(200%);
+    // }
+
+    &:nth-child(2n) {
       transform: translateY(200%);
     }
-    &:nth-child(2) {
+    &:nth-child(2n + 1) {
       transform: translateY(-200%);
-    }
-    &:last-child {
-      transform: translateY(200%);
     }
     &.animated {
       transform: translateY(0);
@@ -134,18 +142,21 @@
 
   &__sub {
     margin-top: 56px;
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
     line-height: 160%;
     color: #222426;
 
-    width: 522px;
+    // width: 522px;
 
     opacity: 0.8;
+
+    max-width: 876px;
+    margin: 56px auto 0;
     &.up {
-      transition-delay: 2s;
+      transition-delay: 1s;
     }
   }
 
@@ -157,13 +168,34 @@
 
     &__list {
       width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 0;
+      column-gap: 20px;
     }
 
     &__item {
-      width: calc(100% / 3);
+      width: 100%;
+      opacity: 0;
+      &:nth-child(4) {
+        border-left: none;
+        padding: 0 20px 0 0;
+      }
+
+      &:nth-child(2n) {
+        transform: translateY(0%);
+        opacity: 0;
+      }
+      &:nth-child(2n + 1) {
+        transform: translateY(0%);
+        opacity: 0;
+      }
+      &.animated {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
     &__sub {
-      text-align: center;
       margin-right: auto;
       margin-left: auto;
     }
@@ -174,28 +206,28 @@
     padding-top: 0;
 
     &__main {
-      font-weight: 400;
       font-size: 16px;
       line-height: 150%;
     }
 
     &__item {
+      margin-top: 16px;
       &-num {
-        font-weight: 400;
         font-size: 16px;
         line-height: 150%;
       }
       &-title {
-        font-weight: 400;
         font-size: 18px;
         line-height: 150%;
       }
       &-text {
-        font-weight: 400;
         font-size: 16px;
         line-height: 150%;
+        flex-grow: 0;
+        margin-top: 8px;
+        align-items: flex-start;
       }
-
+      transition: 1s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
       &:first-child,
       &:nth-child(2),
       &:last-child {
@@ -210,7 +242,6 @@
 
     &__sub {
       margin-top: 32px;
-      font-weight: 400;
       font-size: 16px;
       line-height: 150%;
     }
@@ -222,14 +253,18 @@
     }
     &__list {
       flex-direction: column;
+      grid-template-columns: repeat(1, 1fr);
     }
     &__item {
-      margin-top: 32px;
       width: 100%;
       height: auto;
+      &:first-child {
+        margin-top: 32px;
+      }
       &:not(:first-child) {
         border-left: none;
       }
+
       padding: 0;
       &-text {
         flex-grow: 0;

@@ -1,27 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import { getReviews, getImages, getFaqs } from '../stores/DBStore'
-
-import Contact from '../components/pages/about/Contact'
-import FaqList from '../components/pages/faq/FaqList'
+import { getFaqs } from '../stores/DBStore'
 import { observer } from 'mobx-react'
-import ContentStore, { getFaqContent, getMenu } from '../stores/ContentStore'
+import ContentStore, { getFaqContent, getHome } from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import Layout from '../components/common/Layout'
+import { lazy, Suspense } from 'react'
+
+const Contact = lazy(() => import('../components/pages/about/Contact'))
+const FaqList = lazy(() => import('../components/pages/faq/FaqList'))
 
 const FaqPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -31,11 +22,15 @@ const FaqPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
+    if (effectRef.current) return
+
     getFaqs()
+    getReviewsIO()
+    getHome()
     getFaqContent().then(() => {
-      document.title = `Phinity Therapy | ${ContentStore.faq.pageTitle}`
+      setLoading(false)
     })
-    getMenu()
+    effectRef.current = true
   }, [])
   if (typeof window === 'undefined' || !window.document) {
     return <></>
@@ -43,24 +38,12 @@ const FaqPage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
-      {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
-            <FaqList />
-            <Contact dt={ContentStore.faq.contact} />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
-      )}
+      <Layout withVideo={false}>
+        <Suspense fallback={<></>}>
+          <FaqList />
+          <Contact dt={ContentStore.faq.contact} />
+        </Suspense>
+      </Layout>
     </>
   )
 })

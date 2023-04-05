@@ -4,16 +4,18 @@ import { ReactComponent as Vector } from '../../../../assets/home-area.svg'
 import { ReactComponent as Triangle } from '../../../../assets/triangle.svg'
 
 import PageLinks from '../../../common/PageLinks'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import GlobalState from '../../../../stores/GlobalState'
 import DBStore from '../../../../stores/DBStore'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import classNames from 'classnames'
 import ContentStore from '../../../../stores/ContentStore'
+import { changePlayerState, setVideo } from '../../../common/VideoBox'
 
 const VideosContent = observer(() => {
-  const navigate = useNavigate()
+  const [link, setLink] = useState('')
   useEffect(() => {
+    if (!ContentStore.videos) return
     document.querySelector('.videos-content')?.classList.add('animated')
 
     setTimeout(() => {
@@ -28,178 +30,209 @@ const VideosContent = observer(() => {
       const items = document.querySelectorAll('.videos-content__item')
       items.forEach((i, id) => {
         i?.classList.add('animated')
-        ;(document.querySelector(
-          '.videos-content__item',
-        ) as HTMLElement).style.transitionDelay = `${id / 6}s`
+        ;(i as HTMLElement).style.transitionDelay = `${id / 6}s`
       })
     }, 2000)
-  }, [])
+  }, [ContentStore.videos])
 
   useEffect(() => {
-    const container = document.querySelector('.videos-content')
-    const vect = document.querySelector('.videos-content__vector')
-    const smooth = document.querySelector('.smooth')
+    if (!ContentStore.videos) return
 
-    if (!smooth || !vect) return
-    var bodyRect = smooth!.getBoundingClientRect(),
-      elemRect = container!.getBoundingClientRect(),
-      offset = elemRect.top - bodyRect.top,
-      offsetBottom = elemRect.bottom - elemRect.height / 2
+    if (!ContentStore.videos.list) return
+    setTimeout(() => {
+      const container = document.querySelector('.videos-content')
+      const vect = document.querySelector('.videos-content__vector')
+      const smooth = document.querySelector('.smooth')
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-          if (window.innerWidth > 480) {
-            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-              args.scroll.y - offset
-            }px, 0)`
-          } else {
-            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-              args.scroll.y - offset
-            }px, 0) scale(0.7)`
-          }
+      if (!smooth || !vect) return
+      var bodyRect = smooth!.getBoundingClientRect(),
+        elemRect = container!.getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top,
+        offsetBottom = elemRect.bottom - elemRect.height / 2
+
+      window.addEventListener('scroll', (args: any) => {
+        if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+          requestAnimationFrame(() => {
+            if (window.innerWidth > 480) {
+              ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+                window.scrollY - offset
+              }px, 0)`
+            } else {
+              ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+                window.scrollY - offset
+              }px, 0) scale(0.7)`
+            }
+          })
         }
       })
-  }, [GlobalState.locoScroll])
+    }, 1000)
+  }, [ContentStore.videos])
 
   useEffect(() => {
+    if (!ContentStore.videos) return
+    if (window.innerWidth > 1120) {
+      const cols = document.querySelectorAll('.videos-content__col')
+      const images = document.querySelectorAll('.videos-content__img img')
+
+      if (!cols || !images) return
+
+      cols.forEach((c, i) => {
+        const observer = new window.IntersectionObserver(
+          ([entry]) => {
+            if (entry.isIntersecting) {
+              images.forEach((c) => {
+                c.classList.remove('active')
+              })
+              images[i].classList.add('active')
+            }
+          },
+          {
+            root: null,
+            threshold: 0.8,
+          },
+        )
+
+        observer.observe(c)
+      })
+    }
+  }, [ContentStore.videos])
+  useEffect(() => {
+    if (!ContentStore.videos) return
     if (window.innerWidth <= 768) return
-    const container = document.querySelector('.videos-content__anim')
-    const vect = document.querySelector('.videos-content__img')
-    const images = document.querySelectorAll('.videos-content__img img')
-    const scrollArea = document.querySelector('.videos-content__scroll')
-    const smooth = document.querySelector('.smooth')
+    setTimeout(() => {
+      const container = document.querySelector('.videos-content__anim')
+      const vect = document.querySelector('.videos-content__img')
+      const images = document.querySelectorAll('.videos-content__img img')
+      const scrollArea = document.querySelector('.videos-content__scroll')
+      const smooth = document.querySelector('.smooth')
 
-    console.log(images)
-    if (!smooth || !vect || !scrollArea || !images) return
+      if (!smooth || !vect || !scrollArea || !images) return
 
-    var bodyRect = smooth!.getBoundingClientRect(),
-      elemRect = container!.getBoundingClientRect(),
-      scrollRect = scrollArea!.getBoundingClientRect(),
-      offset = elemRect.top - bodyRect.top,
-      offsetBottom = elemRect.bottom
+      var bodyRect = smooth!.getBoundingClientRect(),
+        elemRect = container!.getBoundingClientRect(),
+        scrollRect = scrollArea!.getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top,
+        offsetBottom = elemRect.bottom
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y < offset) {
-          ;(vect as HTMLElement).style.top = '0px'
-          ;(vect as HTMLElement).style.transform = `translate3d(0, ${0}px, 0)`
+      window.addEventListener('scroll', (args: any) => {
+        if (window.scrollY < offset) {
+          ;(scrollArea as HTMLElement).classList.add('visible')
+          ;(vect as HTMLElement).style.top = `${
+            (window.innerHeight - images[0].getBoundingClientRect().height) / 2
+          }px`
+          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+            ((window.innerHeight - images[0].getBoundingClientRect().height) /
+              2) *
+            -1
+          }px, 0)`
         }
         if (
-          args.scroll.y >= offset &&
-          args.scroll.y <=
-            offsetBottom - images[0].getBoundingClientRect().height
+          window.scrollY >=
+            offset -
+              (window.innerHeight - images[0].getBoundingClientRect().height) /
+                2 &&
+          window.scrollY <=
+            offsetBottom -
+              images[0].getBoundingClientRect().height -
+              (window.innerHeight - images[0].getBoundingClientRect().height) /
+                2
         ) {
-          ;(vect as HTMLElement).style.top = '32px'
           ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
+            window.scrollY - offset
           }px, 0)`
 
-          if (args.scroll.y < offset + scrollRect.height / 4) {
-            images.forEach((img, i) => {
-              img.classList.remove('active')
-            })
-            images[0].classList.add('active')
-          }
-
-          if (
-            args.scroll.y >= offset + scrollRect.height / 4 &&
-            args.scroll.y < offset + scrollRect.height / 3
-          ) {
-            images.forEach((img, i) => {
-              img.classList.remove('active')
-            })
-            console.log(images)
-            images[1].classList.add('active')
-          }
-          if (
-            args.scroll.y >= offset + scrollRect.height / 3 &&
-            args.scroll.y < offset + scrollRect.height
-          ) {
-            images.forEach((img, i) => {
-              img.classList.remove('active')
-            })
-            images[2].classList.add('active')
-          }
+          scrollArea.classList.add('visible')
         }
       })
-  }, [GlobalState.locoScroll])
+    }, 1000)
+  }, [ContentStore.videos])
 
-  if (!ContentStore.videos) return <></>
+  const links = GlobalState.links
+  let videos = '',
+    main = ''
+  if (links) {
+    videos = links.find((l: any) => l.id == 644).link
+    main = links.find((l: any) => l.id == 2).link
+  }
   return (
     <section className="videos-content">
       <Vector className="videos-content__vector" />
       <PageLinks
         links={[
-          { title: ContentStore.videos.mainPageTitle, link: '/' },
-          { title: ContentStore.videos.pageTitle, link: '/video' },
+          { title: ContentStore.videos?.mainPageTitle, link: main },
+          { title: ContentStore.videos?.pageTitle, link: videos },
         ]}
       />
       <div className="videos-content__container">
         <div style={{ overflow: 'hidden' }}>
-          <div
+          <h1
             className="videos-content__title"
             dangerouslySetInnerHTML={{
-              __html: ContentStore.videos.content.title,
+              __html: ContentStore.videos?.content.title,
             }}
-          ></div>
+          ></h1>
         </div>
         <div style={{ overflow: 'hidden' }}>
           <div
             className="videos-content__text"
             dangerouslySetInnerHTML={{
-              __html: ContentStore.videos.content.text,
+              __html: ContentStore.videos?.content.text,
             }}
           ></div>
         </div>
-        {window.innerWidth <= 768 ? (
+        {window.innerWidth <= 1120 ? (
           <div className="videos-content__list">
-            {DBStore.videos?.slice(0, 3)?.map((v, i) => (
+            {ContentStore.videos?.list?.map((v: any, i: number) => (
               <div className="videos-content__item" key={i}>
-                <div className="videos-content__poster">
-                  <img src={v.poster} />
-                </div>
+                <a
+                  href={`${videos}/${v.link}`}
+                  className="videos-content__poster"
+                >
+                  <img src={v.poster} alt={v?.title} />
+                </a>
                 <div className="videos-content__col">
                   <div className="videos-content__col-title">{v.title}</div>
                   <div className="videos-content__col-text">{v.text}</div>
-                  <div
-                    className="about__video"
-                    onClick={() => navigate(`/video/${v.id}`)}
-                  >
+                  <a className="about__video" href={`${videos}/${v.link}`}>
                     <div className="about__video-play">
                       <Triangle />
                     </div>
                     <span>Watch video</span>
-                  </div>
+                    <div className="about__video-cont"></div>
+                  </a>
                 </div>
               </div>
             ))}
           </div>
         ) : (
           <section className="videos-content__anim">
-            <div className="videos-content__img">
-              {DBStore.videos?.slice(0, 3).map((vi, id) => (
-                <img
-                  src={vi.poster}
-                  key={id}
-                  className={classNames(!id && 'active')}
-                />
-              ))}
+            <div className="videos-content__anim-img">
+              <a className="videos-content__img" href={link}>
+                {ContentStore.videos?.list?.map((vi: any, id: number) => (
+                  <img
+                    src={vi.poster}
+                    alt={vi?.title}
+                    key={id}
+                    className={classNames(!id && 'active')}
+                    onMouseEnter={() => {
+                      setLink(`${videos}/${vi.link}`)
+                    }}
+                  />
+                ))}
+              </a>
             </div>
             <div className="videos-content__scroll">
-              {DBStore.videos?.slice(0, 3).map((v, i) => (
+              {ContentStore.videos?.list?.map((v: any, i: number) => (
                 <div className="videos-content__col" key={i}>
                   <div className="videos-content__col-title">{v.title}</div>
                   <div className="videos-content__col-text">{v.text}</div>
-                  <div
-                    className="about__video"
-                    onClick={() => navigate(`/video/${v.id}`)}
-                  >
+                  <a href={`${videos}/${v.link}`} className="about__video">
                     <div className="about__video-play">
                       <Triangle />
                     </div>
                     <span>Watch video</span>
-                  </div>
+                    <div className="about__video-cont"></div>
+                  </a>
                 </div>
               ))}
             </div>

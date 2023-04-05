@@ -2,6 +2,16 @@
   position: relative;
   z-index: 1;
 
+  &__list {
+    ul,
+    ol {
+      margin-left: 20px;
+      li {
+        padding-left: 8px;
+      }
+    }
+  }
+
   &__block {
     width: 100%;
     height: 100%;
@@ -13,13 +23,8 @@
       will-change: transform;
       transform-style: preserve-3d;
       padding-top: 56px;
-      //height: 100vh;
-
-      //
-      justify-content: flex-end;
-
-      //
-      align-items: center;
+      //justify-content: flex-end;
+      // align-items: center;
       position: relative;
       transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
       opacity: 0;
@@ -43,7 +48,6 @@
       font-weight: 500;
       font-size: 32px;
       line-height: 130%;
-      text-transform: uppercase;
       color: #222426;
       margin-bottom: 16px;
     }
@@ -57,13 +61,9 @@
 
   &__scroll {
     position: relative;
-    // position: absolute;
-    // right: 0;
-    // top: 56px;
-    //top: 50%;
     max-width: 480px;
     opacity: 0;
-    transition: 0.5s ease-in opacity, 0.5s ease-in visibility;
+    transition: 0.5s ease-out opacity, 0.5s ease-out visibility;
     &.animated {
       opacity: 1;
       visibility: visible;
@@ -78,7 +78,7 @@
   &__item {
     padding: 24px 42px 24px 0;
     display: flex;
-    background: rgba(234, 230, 221, 0.3);
+    // background: rgba(234, 230, 221, 0.3);
     &:not(:first-child) {
       border-top: 1px solid #efebe4;
     }
@@ -94,7 +94,7 @@
     }
     &-text {
       margin-top: -3px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -105,11 +105,10 @@
     width: 660px;
     height: 670px;
     min-width: 660px;
-    position: relative;
     margin-right: 98px;
 
     //
-    position: absolute;
+    position: sticky;
     margin-right: 98px;
     left: 0;
     top: 56px;
@@ -119,7 +118,7 @@
       border-radius: 50%;
     }
     div.sphere {
-      transition: 0.2s ease transform, 0.3s ease-in opacity;
+      transition: 0.6s ease-out transform, 0.5s ease-out opacity;
       position: absolute;
       opacity: 0;
       z-index: 1;
@@ -131,7 +130,7 @@
     }
     div.center {
       z-index: 1;
-      transition: 0.2s ease-in transform, 0.3s ease-in opacity;
+      transition: 0.5s ease-out transform, 0.5s ease-out opacity;
       position: absolute;
       opacity: 0;
       transform: scale(0);
@@ -146,7 +145,7 @@
       top: 0;
       left: 0;
       z-index: -1;
-      transition: 0.3s ease visibility;
+      transition: 0.3s ease-out visibility;
       &.hidden {
         visibility: hidden;
       }
@@ -212,10 +211,10 @@
 
     &.initial {
       div.w253 {
-        transform: scale(0);
+        transform: scale(0) translate(0, 0);
 
         &.animated {
-          transform: scale(1);
+          transform: scale(1) translate(0, 0);
         }
         & + div.line {
           width: 149.93px;
@@ -536,6 +535,12 @@
       padding-top: 0;
       height: auto;
     }
+
+    &__block {
+      &-title {
+        text-align: center;
+      }
+    }
     &__scroll {
       position: relative;
       right: auto;
@@ -549,6 +554,7 @@
       margin-right: 0;
       position: relative;
       top: 0;
+      margin-bottom: 24px;
 
       div.w253 {
         height: 115.171630859375px;
@@ -735,7 +741,7 @@
 
     &__block-col {
       opacity: 0;
-      transition: 0.5s ease-in opacity, 0.5s ease-in visibility;
+      transition: 0.5s ease-out opacity, 0.5s ease-out visibility;
       &.animated {
         opacity: 1;
         visibility: visible;
@@ -749,10 +755,10 @@
       }
     }
     &__block-title {
-      font-weight: 400;
       font-size: 18px;
       line-height: 130%;
-      margin-bottom: 16px;
+      margin-bottom: 0;
+      text-align: left;
     }
 
     &__item {

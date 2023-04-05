@@ -14,66 +14,79 @@ import Filter from '../Filter'
 import GlobalState, {
   changeTheraFilterState,
 } from '../../../../stores/GlobalState'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import ContentStore from '../../../../stores/ContentStore'
+import ReviewsIO from '../../../../assets/ex/reviews-mobile.svg'
+import { ReactComponent as BlueStar } from '../../../../assets/ex/star.svg'
+import { ReactComponent as ScrollDown } from '../../../../assets/post/arrow.svg'
 
 const Therapists = observer(() => {
-  const circleInstance = useRef<any>(null)
-
-  const links = [
-    {
-      title: ContentStore.therapists.mainPageTitle,
-      link: '/',
-    },
-    {
-      title: ContentStore.therapists.pageTitle,
-      link: '/therapists',
-    },
-  ]
-
+  const getStars = (count: number) => {
+    return new Array(Math.ceil(count)).fill(0, 0)
+  }
   useEffect(() => {
     if (window.innerWidth <= 768) {
-      new CircleType(circleInstance.current).radius(60)
+      // new CircleType(circleInstance.current).radius(60)
+      const smooth = document.querySelector('.smooth')
+      const about = smooth!.querySelector('.all-therapists')
+      about?.classList.add('animated')
     }
   }, [])
 
   useEffect(() => {
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        const smooth = document.querySelector('.smooth')
-        const about = smooth!.querySelector('.all-therapists')
-        const title = smooth!.querySelector('.all-therapists__title')
-        const button = smooth!.querySelector('.all-therapists .button.filter')
-        const list = smooth!.querySelector('.all-therapists__list')
-        const items = smooth!.querySelectorAll(
-          '.all-therapists .therapists__item.small',
-        )
-        var bodyRect = smooth!.getBoundingClientRect(),
-          elemRect = about!.getBoundingClientRect(),
-          offset = elemRect.top - bodyRect.top
+    setTimeout(() => {
+      const smooth = document.querySelector('.smooth')
 
-        if (args.scroll.y > offset - 300) {
-          about?.classList.add('animated')
-          title?.classList.add('animated')
-          button?.classList.add('animated')
-          items.forEach((i, id) => {
-            elemRect = i!.getBoundingClientRect()
-            offset = elemRect.top - bodyRect.top
-            if (args.scroll.y > offset - 1000) {
+      const about = smooth!.querySelector('.all-therapists')
+      const title = smooth!.querySelector('.all-therapists__title')
+      const button = smooth!.querySelector('.all-therapists .button.filter')
+      const list = smooth!.querySelector('.all-therapists__list')
+      about?.classList.add('animated')
+      title?.classList.add('animated')
+      button?.classList.add('animated')
+    }, 1000)
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('scroll', (args: any) => {
+      const smooth = document.querySelector('.smooth')
+      const items = smooth!.querySelectorAll(
+        '.all-therapists .therapists__item.small',
+      )
+      items.forEach((i, id) => {
+        let elemRect = i!.getBoundingClientRect()
+        let bodyRect = smooth!.getBoundingClientRect()
+        let offset = elemRect.top - bodyRect.top
+        if (window.scrollY > offset - 1000) {
+          setTimeout(
+            () => {
               ;(i as any).classList.add('animated')
-              if (window.innerWidth > 768) {
-                ;(i as any).style.transitionDelay = `${id / 3 + 1.5}s`
-              } else;
-              ;(i as any).style.transitionDelay = `${id / 3 + 0.3}s`
-            }
-          })
+            },
+            window.innerWidth > 768 ? (id / 8) * 1000 : (id / 3 + 0.3) * 1000,
+          )
         }
       })
-  }, [GlobalState.locoScroll])
+    })
+  }, [])
+
+  useEffect(() => {
+    const smooth = document.querySelector('.smooth')
+    const items = smooth!.querySelectorAll(
+      '.all-therapists .therapists__item.small',
+    )
+    items.forEach((i, id) => {
+      setTimeout(
+        () => {
+          ;(i as any).classList.add('animated')
+        },
+        window.innerWidth > 768 ? (id / 8) * 1000 : (id / 3 + 0.3) * 1000,
+      )
+    })
+  }, [DBStore.therapists])
 
   useEffect(() => {
     setTimeout(() => {
-      if (GlobalState.locoScroll && window.innerWidth > 768) {
+      if (window.innerWidth > 768) {
         const cont = document.querySelector('.all-therapists')
         const next = cont?.nextElementSibling
         const list = document.querySelector('.all-therapists__list')
@@ -87,54 +100,109 @@ const Therapists = observer(() => {
         var offset = listRect.top - bodyRect.top,
           offsetBottom = nextRect.top - v2!.getBoundingClientRect().height
 
-        GlobalState.locoScroll &&
-          GlobalState.locoScroll.on('scroll', (args: any) => {
-            if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-              ;(v2 as HTMLElement).style.transform = `translate3d(0, ${
-                args.scroll.y - offset
-              }px, 0) rotateY(180deg)`
-            }
-          })
+        window.addEventListener('scroll', (args: any) => {
+          if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+            ;(v2 as HTMLElement).style.transform = `translate3d(0, ${
+              window.scrollY - offset
+            }px, 0) rotateY(180deg)`
+          }
+        })
       }
     }, 1000)
   }, [])
 
   if (!ContentStore.therapists) return <></>
 
+  const linksL = GlobalState.links
+  let therapists = '',
+    main = ''
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+    therapists = linksL.find((l: any) => l.id == 268).link
+  }
+
+  const links = [
+    {
+      title: ContentStore.therapists.mainPageTitle,
+      link: main,
+    },
+    {
+      title: ContentStore.therapists.pageTitle,
+      link: '/therapists',
+    },
+  ]
+
   return (
     <section className="all-therapists">
       <div className="all-therapists__container">
-        {window.innerWidth > 768 && <PageLinks links={links} />}
-        <div className="all-therapists__intro">
-          <PageLinks links={links} />
-          <div
+        <PageLinks links={links} />
+        {/* <div className="all-therapists__intro">
+          <PageLinks links={links} /> */}
+          {/* <h1
             className="all-therapists__intro-title  animated fadeIn"
             dangerouslySetInnerHTML={{
               __html: ContentStore.therapists.main.title,
             }}
-          ></div>
+          ></h1>
           <div
             className="all-therapists__intro-text animated fadeIn delay-1s "
             dangerouslySetInnerHTML={{
               __html: ContentStore.therapists.main.text,
             }}
           ></div>
-          <Button
-            text={ContentStore.therapists.main.buttonTitle}
-            click={() => {}}
-            classname="blue p18p40 animated fadeIn delay-2s"
-          />
-          <div className="all-therapists__intro-bottom">
-            <div className="intro__scroll animated fadeIn delay-3s ">
-              <div className="intro__scroll-area">
-                <div className="intro__scroll-text" ref={circleInstance}>
-                  Scroll Down
-                </div>
+          {window.innerWidth > 768 && (
+            <a
+              href={ContentStore.home.intro.buttonLink}
+              target="_blank"
+              className="button blue p18p40 animated fadeIn delay-2s"
+            >
+              <div className="button__text">
+                {ContentStore.therapists.main.buttonTitle}
               </div>
-              <Scroll className="" />
+            </a>
+          )} */}
+          {/* 
+          <div className="all-therapists__intro-bottom">
+            {GlobalState.rating && window.innerWidth <= 768 && (
+              <a
+                href="https://www.reviews.co.uk/company-reviews/store/phinity-therapy?utm_source=phinity-therapy&utm_medium=widget&utm_campaign=text-banner"
+                target={'_blank'}
+                className="animated fadeIn delay-2s intro__widget"
+              >
+                <div className="intro__widget-col">
+                  <div className="intro__widget-stars">
+                    {' '}
+                    <img
+                      src={ReviewsIO}
+                      alt={window.location.href}
+                      className="intro__widget-icon"
+                    />
+                    {getStars(GlobalState.rating?.average_rating).map(
+                      (s, i) => (
+                        <BlueStar key={i} className="intro__widget-star" />
+                      ),
+                    )}
+                  </div>
+                  <span>
+                    Read our{' '}
+                    <span className="intro__widget-count">
+                      {GlobalState.rating?.num_ratings}
+                    </span>
+                    {GlobalState.rating?.num_ratings > 1 ||
+                    !GlobalState.rating?.num_ratings
+                      ? 'reviews'
+                      : 'review'}{' '}
+                  </span>
+                </div>
+              </a>
+            )}
+            <div className="intro__scrolldown animated fadeIn delay-3s">
+              <ScrollDown />
+              <ScrollDown />
+              <ScrollDown />
             </div>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
         <div className="all-therapists__top">
           <div style={{ overflow: 'hidden' }}>
             <div
@@ -150,8 +218,8 @@ const Therapists = observer(() => {
               <>
                 {window.innerWidth > 768 ? <Setting /> : <MobSetting />}
                 {window.innerWidth > 768 && 'Filter'}
-                {window.innerWidth > 768 && GlobalState.theraFilterCount ? (
-                  <span>({GlobalState.theraFilterCount})</span>
+                {window.innerWidth > 768 && GlobalState.filterCount ? (
+                  <span>({GlobalState.filterCount})</span>
                 ) : (
                   <></>
                 )}
@@ -165,23 +233,22 @@ const Therapists = observer(() => {
 
         <div className="all-therapists__list">
           {DBStore.therapists?.map((i, id) => (
-            <Link
+            <a
               className="therapists__item small"
               key={id}
-              to={`/therapist/${i.id}`}
+              href={`${therapists}/${i.link}`}
             >
               <div className="therapists__item-img">
-                <img src={i.img} />
+                <img src={i.img} alt={i?.name} />
               </div>
               <div className="therapists__item-info">
-                <div className="therapists__item-title">Dr. {i.name}</div>
+                <div className="therapists__item-title">{i.name}</div>
                 <div className="therapists__item-text">{i.position}</div>
               </div>
-            </Link>
+            </a>
           ))}
         </div>
       </div>
-      <Filter />
     </section>
   )
 })

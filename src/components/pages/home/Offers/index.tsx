@@ -6,8 +6,8 @@ import { ReactComponent as Vector } from '../../../../assets/Vector 3.svg'
 import ContentStore from '../../../../stores/ContentStore'
 const Offers = observer(() => {
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      GlobalState.locoScroll.on('scroll', (args: any) => {
+    if (ContentStore.home.offers) {
+      window.addEventListener('scroll', () => {
         const smooth = document.querySelector('.smooth')
         const offers = smooth!.querySelector('.offers')
         const offersList = smooth!.querySelector('.offers__list')
@@ -17,12 +17,12 @@ const Offers = observer(() => {
         var bodyRect = smooth!.getBoundingClientRect(),
           elemRect = offers!.getBoundingClientRect(),
           offset = elemRect.top - bodyRect.top
-        if (args.scroll.y > offset - 700) {
+        if (window.scrollY > offset - 700) {
           offers?.classList.add('animated')
           title?.classList.add('animated')
         }
 
-        if (args.scroll.y > offset - 500) {
+        if (window.scrollY > offset - 500) {
           items.forEach((i, id) => {
             i.classList.add('animated')
             ;(i as HTMLDivElement).style.transitionDelay = `${id / 8}s`
@@ -30,7 +30,7 @@ const Offers = observer(() => {
         }
       })
     }
-  }, [GlobalState.locoScroll])
+  }, [ ContentStore.home.offers])
 
   useEffect(() => {
     if (window.innerWidth <= 480) {
@@ -43,30 +43,31 @@ const Offers = observer(() => {
         offset = contRect.top - bodyRect.top,
         offsetBottom = contRect.bottom - contRect.height / 2
 
-      GlobalState.locoScroll &&
-        GlobalState.locoScroll.on('scroll', (args: any) => {
-          if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-              args.scroll.y - offset
-            }px, 0)`
+      window.addEventListener('scroll', () => {
+          if (window.scrollY >= offset && window.scrollY  <= offsetBottom) {
+            requestAnimationFrame(() => {
+              ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+                window.scrollY  - offset
+              }px, 0)`
+            })
           }
         })
     }
-  }, [GlobalState.locoScroll])
+  }, [ContentStore.home.offers])
 
-  if (!ContentStore.home.offers) return <></>
+  // if (!ContentStore.home.offers) return <></>
   return (
     <section className="offers">
       <div className="offers__container">
         <div className="offers__wrapper">
           <div
             className="offers__title"
-            dangerouslySetInnerHTML={{ __html: ContentStore.home.offers.title }}
+            dangerouslySetInnerHTML={{ __html: ContentStore.home?.offers?.title }}
           ></div>
         </div>
         <div className="offers__wrapper list">
           <div className="offers__list">
-            {ContentStore.home.offers.list?.map((o, i) => (
+            {ContentStore.home?.offers?.list?.map((o, i) => (
               <div className={`offers__item offers__item${i}`} key={i}>
                 <div
                   className="offers__item-title"

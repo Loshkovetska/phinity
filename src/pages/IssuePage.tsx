@@ -1,48 +1,52 @@
 import { observer } from 'mobx-react'
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
-import Footer from '../components/common/Footer'
-import Header from '../components/common/Header'
-import ScrollToTop from '../components/common/ScrollToTop'
-import SearchBox from '../components/common/SearchBox'
-import Blogs from '../components/pages/home/Blogs'
-import BookBlock from '../components/pages/home/BookBlock'
-import Issues from '../components/pages/home/Issues'
-import Reviews from '../components/pages/home/Reviews'
-import Therapists from '../components/pages/home/Therapists'
-import CanHelp from '../components/pages/issue/CanHelp'
-import Services from '../components/pages/issue/Services'
-import Symptoms from '../components/pages/issue/Symptoms'
-import AboutService from '../components/pages/service/AboutService'
-import AboutSphere from '../components/pages/service/AboutSphere'
-import TherapyHelp from '../components/pages/service/TherapyHelp'
-import Intro from '../components/pages/services/Intro'
-import useLocoScroll from '../hooks/useLoco'
-import ContentStore, { getBookBlock, getMenu } from '../stores/ContentStore'
+import { Service } from '../api/mocks/services'
+import ContentStore, {
+  getBookBlock,
+  getHome,
+  getIssueContent,
+  getMenu,
+} from '../stores/ContentStore'
 import DBStore, {
   getIssue,
-  getPosts,
+  getPopularPosts,
+  getPopularVideos,
   getReviews,
-  getService,
-  getServicesByIssue,
-  getSymptoms,
   getTherapists,
 } from '../stores/DBStore'
+import GlobalState, { getReviewsIO } from '../stores/GlobalState'
+import Layout from '../components/common/Layout'
+
+const Intro = lazy(() => import('../components/pages/services/Intro'))
+const References = lazy(() => import('../components/common/References'))
+const BookBlock = lazy(() => import('../components/pages/home/BookBlock'))
+const Reviews = lazy(() => import('../components/pages/home/Reviews'))
+const Therapists = lazy(() => import('../components/pages/home/Therapists'))
+const CanHelp = lazy(() => import('../components/pages/issue/CanHelp'))
+const Services = lazy(() => import('../components/pages/issue/Services'))
+const Symptoms = lazy(() => import('../components/pages/issue/Symptoms'))
+const AboutService = lazy(() =>
+  import('../components/pages/service/AboutService'),
+)
+
+const TherapyHelp = lazy(() =>
+  import('../components/pages/service/TherapyHelp'),
+)
+const PopularPosts = lazy(() =>
+  import('../components/pages/video/PopularPosts'),
+)
+const PopularVideos = lazy(() =>
+  import('../components/pages/videos/PopularVideos'),
+)
 
 const IssuePage = observer(() => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [dt, setDt] = useState<any>(null)
   const [service, setService] = useState<any>(null)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { id: id } = useParams()
+  const { sub: id } = useParams()
+  const effectRef = useRef<any>(false)
 
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -52,84 +56,104 @@ const IssuePage = observer(() => {
   }, [loading])
 
   useEffect(() => {
-    getIssue(+id!).then(() => {
+    if (effectRef.current) return
+
+    getHome()
+    getTherapists()
+    getReviews()
+    getBookBlock()
+    getReviewsIO()
+    getPopularPosts()
+    getPopularVideos()
+
+    getIssue(id!).then(() => {
       DBStore.issue && setService(DBStore.issue)
     })
-    getServicesByIssue(+id!)
-    getTherapists()
-    getPosts()
-    getReviews()
-    getSymptoms(+id!)
-    getBookBlock()
-    getMenu()
+    getIssueContent(id!).then(() => {
+      setDt({
+        text: ContentStore.issue?.intro?.text,
+        buttonText: ContentStore.issue?.intro?.buttonText,
+        buttonLink: ContentStore.issue?.intro?.buttonLink,
+      })
+    })
+    effectRef.current = true
   }, [])
 
   useEffect(() => {
-    if (service) {
-      document.title = `Phinity | ${service.title}`
+    if (service && ContentStore.issue) {
+      setLoading(false)
     }
-  }, [service])
+  }, [ContentStore.issue, service])
 
   if (typeof window === 'undefined' || !window.document || !service) {
     return <></>
   }
+
+  let main = '',
+    issuesL = ''
+  const linksL = GlobalState.links
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+    issuesL = linksL.find((l: any) => l.id == 266).link
+  }
   const links = [
     {
       title: ContentStore.issue.intro.mainPageTitle,
-      link: '/',
+      link: main,
     },
     {
       title: ContentStore.issue.intro.pageTitle,
-      link: '/issue',
+      link: issuesL,
     },
     {
-      title: `${service.title}`,
+      title: `${service.title.replaceAll('<br/>', ' ')}`,
       link: '/',
     },
   ]
-  const dt = {
-    title: `${service.title}`,
-    text: ContentStore.issue.intro.pageTitle,
-  }
 
-  const getBlogTitle = () => {
-    let t = service.title.replaceAll('\n', ' ')
-    if (t.includes('(')) {
-      const idx = t.indexOf('(')
-      t = t.slice(0, idx)
+  if (!ContentStore.issue) return <></>
 
-      return t
-    }
-    return t
+  let services: Array<Service> = []
+
+  if (ContentStore.issue.services) {
+    services = JSON.parse(JSON.stringify(ContentStore.issue.services))
+    services = services.sort((a, b) => a.title.localeCompare(b.title))
   }
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
-            <Intro dt={dt} links={links} classname="service-page" />
+        <Layout withVideo={false} withScroll isTranslate>
+          <Suspense fallback={<></>}>
+            <Intro
+              dt={{
+                ...dt,
+                title: service.title.replaceAll('<br/>', ' '),
+              }}
+              links={links}
+              classname="service-page"
+            />
             <AboutService classname="issue" dt={ContentStore.issue.about} />
             <Symptoms />
             <CanHelp />
-            <Services title={ContentStore.issue.serviceTitle} />
+            <Services title={ContentStore.issue.serviceTitle} dt={services} />
             <TherapyHelp dt={ContentStore.issue.therapyHelp} />
-            <Therapists therapist={ContentStore.issue.therapist}
-            therapists={ContentStore.issue.therapists}/>
-            <Reviews dt={ContentStore.issue.reviews}/>
-            <Blogs title={ContentStore.issue.blogTitle} />
+            <Therapists
+              dt={ContentStore.issue.therapists.list}
+              therapist={ContentStore.issue.therapist}
+              therapists={ContentStore.issue.therapists}
+            />
+            <Reviews dt={ContentStore.issue.reviews} />
+            <PopularPosts
+              content={{
+                title: ContentStore.issue.blogTitle,
+                buttonTitle: ContentStore.issue.blogButton,
+              }}
+            />
+            <PopularVideos content={ContentStore.issue.video} />
+            <References dt={ContentStore.issue.refs} />
             <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
     </>
   )

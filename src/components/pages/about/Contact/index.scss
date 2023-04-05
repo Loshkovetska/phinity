@@ -4,7 +4,7 @@
   padding: 180px 0;
 
   opacity: 0;
-  transition: 1s ease-in opacity;
+  transition: 1s ease-out opacity;
 
   &.animated {
     opacity: 1;
@@ -33,7 +33,7 @@
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -46,7 +46,7 @@
   &__error {
     display: flex;
     align-items: center;
-    font-family: 'Montserrat';
+    font-family: 'Montserrat SemiBold';
     font-style: normal;
     font-weight: 600;
 
@@ -62,7 +62,7 @@
   }
 
   &__sub-text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -73,12 +73,17 @@
     margin-top: 12px;
     a {
       text-decoration: none;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 14px;
       line-height: 140%;
       color: #ffffff;
+      transition: 0.3s ease-in-out all;
+
+      &:hover{
+        color: #0033cc;
+      }
     }
   }
 
@@ -110,7 +115,7 @@
       border: 1px solid #ded9ce;
       display: flex;
       align-items: center;
-      transition: 0.5s ease-in border-color;
+      transition: 0.5s ease-out border-color;
       &.focus {
         border-color: #0033cc;
       }
@@ -121,7 +126,7 @@
     background: transparent;
     outline: none;
     border: none;
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -130,7 +135,7 @@
     width: 100%;
 
     &::placeholder {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 14px;

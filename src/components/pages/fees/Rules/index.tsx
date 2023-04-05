@@ -15,19 +15,24 @@ const Rules = observer(() => {
       elementTop = about!.getBoundingClientRect().top,
       offset = elementTop - bodyTop
 
-    if (GlobalState.locoScroll) {
-      ;(GlobalState.locoScroll as any).on('scroll', (args: any) => {
-        if (args.scroll.y > offset - 500) {
-          about?.classList.add('animated')
-          title?.classList.add('animated')
-          text?.classList.add('animated')
-          setTimeout(() => {
-            items.forEach((i) => i?.classList.add('animated'))
-          }, 2000)
-        }
-      })
-    }
-  }, [GlobalState.locoScroll])
+    setTimeout(() => {
+      about?.classList.add('animated')
+      title?.classList.add('animated')
+      text?.classList.add('animated')
+      items.forEach((i) => i?.classList.add('animated'))
+    }, 100)
+
+    // window.addEventListener('scroll', () => {
+    //   if (window.scrollY > offset - 700) {
+    //     about?.classList.add('animated')
+    //     title?.classList.add('animated')
+    //     text?.classList.add('animated')
+    //     setTimeout(() => {
+    //       items.forEach((i) => i?.classList.add('animated'))
+    //     }, 2000)
+    //   }
+    // })
+  }, [ContentStore.fees.rules])
 
   if (!ContentStore.fees.rules) return <></>
 

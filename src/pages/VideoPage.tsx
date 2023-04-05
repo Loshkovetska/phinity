@@ -1,30 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Reviews from '../components/pages/home/Reviews'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import DBStore, { getReviews, getVideo, getVideos } from '../stores/DBStore'
-import BookBlock from '../components/pages/home/BookBlock'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import DBStore, {
+  getPopularPosts,
+  getPopularVideos,
+  getPosts,
+  getReviews,
+  getVideo,
+  getVideos,
+} from '../stores/DBStore'
+
 import { useParams } from 'react-router'
 import { observer } from 'mobx-react'
 
-import VideoIntro from '../components/pages/video/VideoIntro'
-import ContentStore, { getBookBlock, getMenu, getVideoContent } from '../stores/ContentStore'
+import ContentStore, {
+  getBookBlock,
+  getHome,
+  getVideoContent,
+} from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import Layout from '../components/common/Layout'
 
+
+const Reviews= lazy(()=>import('../components/pages/home/Reviews'))
+const BookBlock= lazy(()=>import('../components/pages/home/BookBlock'))
+const PopularPosts= lazy(()=>import('../components/pages/video/PopularPosts'))
+const PopularVideos = lazy(() => import('../components/pages/videos/PopularVideos'))
+const VideoIntro= lazy(()=>import('../components/pages/video/VideoIntro'))
 const VideoPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const { id: id } = useParams()
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const [loading, setLoading] = useState(true)
+  const { sub: id } = useParams()
+  const effectRef = useRef<any>(false)
 
   useEffect(() => {
     if (!loading) {
@@ -35,43 +39,46 @@ const VideoPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
+    if (effectRef.current) return
+
     getReviews()
     getVideos()
-    getMenu()
     getBookBlock()
-    getVideoContent()
-  }, [])
-
-  useEffect(() => {
-    getVideo(+id!).then(() => {
-      document.title = `Phinity | ${DBStore.video?.title}`
+    getPopularVideos()
+    getVideoContent(id!)
+    getReviewsIO()
+    getHome()
+    getPosts()
+    getPopularPosts()
+    getVideo(id!).then(() => {
+      setLoading(false)
     })
+    effectRef.current = true
   }, [])
 
   if (typeof window === 'undefined' || !window.document) {
     return <></>
   }
 
+  if (!DBStore.video) return <></>
+
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <VideoIntro />
+            <PopularPosts
+              content={{
+                title: ContentStore.video.blogTitle,
+                buttonTitle: ContentStore.video.blogButton,
+              }}
+            />
+            <PopularVideos content={ContentStore.video.video} />
             <Reviews dt={ContentStore.video.reviews} />
             <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
     </>
   )

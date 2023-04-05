@@ -1,34 +1,39 @@
 import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
 import Reviews from '../components/pages/home/Reviews'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import { getReviews, getImages } from '../stores/DBStore'
-import AboutContent from '../components/pages/about/AboutContent'
-import AboutPhinity from '../components/pages/about/AboutPhinity'
-import OurTeam from '../components/pages/about/OutTeam'
-import Phylosophy from '../components/pages/about/Phylosophy'
-import PhinityAdvantages from '../components/pages/services/PhitityAdvantages'
-import ChooseUs from '../components/pages/about/ChooseUs'
-import OurClinic from '../components/pages/about/OurClinic'
-import Contact from '../components/pages/about/Contact'
+import { getReviews } from '../stores/DBStore'
+// import AboutContent from '../components/pages/about/AboutContent'
+// import AboutPhinity from '../components/pages/about/AboutPhinity'
+// import OurTeam from '../components/pages/about/OutTeam'
+// import Phylosophy from '../components/pages/about/Phylosophy'
+// import PhinityAdvantages from '../components/pages/services/PhitityAdvantages'
+// import ChooseUs from '../components/pages/about/ChooseUs'
+// import OurClinic from '../components/pages/about/OurClinic'
+// import Contact from '../components/pages/about/Contact'
 import { observer } from 'mobx-react'
-import ContentStore, { getAbout, getMenu } from '../stores/ContentStore'
+import ContentStore, { getAbout } from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import Layout from '../components/common/Layout'
+import { lazy, Suspense } from 'react'
+
+const AboutContent = lazy(() =>
+  import('../components/pages/about/AboutContent'),
+)
+const AboutPhinity = lazy(() =>
+  import('../components/pages/about/AboutPhinity'),
+)
+const OurTeam = lazy(() => import('../components/pages/about/OutTeam'))
+const Phylosophy = lazy(() => import('../components/pages/about/Phylosophy'))
+const PhinityAdvantages = lazy(() =>
+  import('../components/pages/services/PhitityAdvantages'),
+)
+const ChooseUs = lazy(() => import('../components/pages/about/ChooseUs'))
+const OurClinic = lazy(() => import('../components/pages/about/OurClinic'))
+const Contact = lazy(() => import('../components/pages/about/Contact'))
 
 const AboutPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    document.title = 'Phinity Therapy | About'
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -38,10 +43,13 @@ const AboutPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
-    getImages()
+    if (effectRef.current) return
     getReviews()
-    getAbout()
-    getMenu()
+    getReviewsIO()
+    getAbout().then(() => {
+      setLoading(false)
+    })
+    effectRef.current = true
   }, [])
   if (typeof window === 'undefined' || !window.document) {
     return <></>
@@ -49,17 +57,9 @@ const AboutPage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <AboutContent />
             <AboutPhinity />
             <OurTeam />
@@ -69,10 +69,8 @@ const AboutPage = observer(() => {
             <ChooseUs />
             <Reviews dt={ContentStore.about.reviews} />
             <Contact dt={ContentStore.about.contact} />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
     </>
   )

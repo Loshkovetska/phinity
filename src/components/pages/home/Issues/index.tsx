@@ -18,10 +18,18 @@ import classNames from 'classnames'
 import { Link, useNavigate } from 'react-router-dom'
 import DBStore from '../../../../stores/DBStore'
 import ContentStore from '../../../../stores/ContentStore'
+import { Issue } from '../../../../api/mocks/issues'
 
 const Issues = observer(
-  ({ classname, dt }: { classname?: string; dt: any }) => {
-    const navigate = useNavigate()
+  ({
+    classname,
+    dt,
+    arr,
+  }: {
+    classname?: string
+    dt: any
+    arr: Array<Issue> | null | undefined
+  }) => {
     const Vector = ({ id }: { id: number }) => {
       const vectors = [
         <Vector1 className="issues__item-vector" />,
@@ -47,14 +55,15 @@ const Issues = observer(
           offset = contRect.top - bodyRect.top,
           offsetBottom = contRect.bottom - contRect.height / 2
 
-        GlobalState.locoScroll &&
-          GlobalState.locoScroll.on('scroll', (args: any) => {
-            if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+            requestAnimationFrame(() => {
               ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-                args.scroll.y - offset
+                window.scrollY - offset
               }px, 0)`
-            }
-          })
+            })
+          }
+        })
       }
       if (window.innerWidth > 480 && classname?.includes('service-page')) {
         const container = document.querySelector('.issues.service-page')
@@ -66,16 +75,30 @@ const Issues = observer(
           offset = contRect.top - bodyRect.top,
           offsetBottom = contRect.bottom - contRect.height / 2
 
-        GlobalState.locoScroll &&
-          GlobalState.locoScroll.on('scroll', (args: any) => {
-            if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
+        window.addEventListener('scroll', () => {
+          if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+            requestAnimationFrame(() => {
               ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-                args.scroll.y - offset
+                window.scrollY - offset
               }px, 0)`
-            }
-          })
+            })
+          }
+        })
       }
-    }, [GlobalState.locoScroll])
+    }, [])
+
+    const links = GlobalState.links
+    let issues = ''
+    if (links) {
+      issues = links.find((l: any) => l.id == 266).link
+    }
+
+    let subarr: any = [];
+    
+    if (arr) {
+      const ar= JSON.parse(JSON.stringify(arr))
+      subarr = ar.sort((a:Issue, b:Issue)=>a.title.localeCompare(b.title))
+    }
 
     return (
       <section className={classNames('issues', classname)}>
@@ -92,7 +115,7 @@ const Issues = observer(
                 <div
                   className="issues__title"
                   dangerouslySetInnerHTML={{
-                    __html: dt.title,
+                    __html: dt?.title,
                   }}
                 ></div>
               </div>
@@ -100,48 +123,42 @@ const Issues = observer(
                 <div
                   className="issues__text"
                   dangerouslySetInnerHTML={{
-                    __html: dt.text,
+                    __html: dt?.text,
                   }}
                 ></div>
               </div>
             </div>
-            {window.innerWidth > 768 && !classname?.includes('service-page') && (
-              <Button
-                text={
-                  <>
-                    {dt.buttonTitle} <Arrow />
-                  </>
-                }
-                click={() => navigate('/issues')}
-                classname="p18p40 black-border"
-              />
+            {window.innerWidth > 768 && (
+              <a href={issues} className="button p18p40 black-border">
+                <div className="button__text">
+                  See All <Arrow />
+                </div>
+              </a>
             )}
           </div>
 
           <div className="issues__list">
-            {DBStore.issues?.slice(0, 6).map((is, i) => (
-              <Link className="issues__item" key={i} to={`/issue/${is.id}`}>
+            {subarr?.map((is:any, i:number) => (
+              <a className="issues__item" key={i} href={`${issues}/${is.link}`}>
                 <Vector id={i} />
                 <div
                   className="issues__item-title"
                   dangerouslySetInnerHTML={{ __html: is.title }}
                 ></div>
-                <div className="issues__item-text">{is.text}</div>
+                <div
+                  className="issues__item-text"
+                  dangerouslySetInnerHTML={{ __html: is.text }}
+                ></div>
                 <ArrowRight className="issues__item-arrow" />
-              </Link>
+              </a>
             ))}
           </div>
-          {window.innerWidth <= 768 && !classname?.includes('service-page') && (
-            <Button
-              text={
-                <>
-                  {dt.buttonTitle}
-                  <Arrow />
-                </>
-              }
-              click={() => navigate('/issues')}
-              classname="p18p40 black-border"
-            />
+          {window.innerWidth <= 768 && (
+            <a href={issues} className="button p18p40 black-border">
+              <div className="button__text">
+                See All <Arrow />
+              </div>
+            </a>
           )}
         </div>
       </section>

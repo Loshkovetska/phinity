@@ -1,41 +1,33 @@
-import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import BookBlock from '../components/pages/home/BookBlock'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import {
-  getIssues,
-  getReviews,
-  getServices,
-  getTherapist,
-  getTherapists,
-  getServicesByTherapists,
-} from '../stores/DBStore'
-import Reviews from '../components/pages/home/Reviews'
-import Issues from '../components/pages/home/Issues'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+
+import { getIssues, getReviews, getTherapist } from '../stores/DBStore'
 import { useParams } from 'react-router'
-import Intro from '../components/pages/therapist/Intro'
-import TherapistBlock from '../components/pages/therapist/TherapistBlock'
-import Services from '../components/pages/issue/Services'
-import Contact from '../components/pages/therapist/Contact'
+
 import { observer } from 'mobx-react'
-import ContentStore, { getBookBlock, getMenu } from '../stores/ContentStore'
+import ContentStore, {
+  getBookBlock,
+  getHome,
+  getTherapistContent,
+} from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import { Issue } from '../api/mocks/issues'
+import { Service } from '../api/mocks/services'
+import Layout from '../components/common/Layout'
+
+const BookBlock = lazy(()=>import('../components/pages/home/BookBlock'))
+const Reviews = lazy(()=>import('../components/pages/home/Reviews'))
+const Issues = lazy(()=>import('../components/pages/home/Issues'))
+const Intro = lazy(() => import( '../components/pages/therapist/Intro'))
+const TherapistBlock = lazy(()=>import('../components/pages/therapist/TherapistBlock'))
+
+const Services = lazy(()=>import('../components/pages/issue/Services'))
+const Contact = lazy(()=>import('../components/pages/therapist/Contact'))
 
 const TherapistPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { id: id } = useParams()
-  useLocoScroll(!loading)
-  useEffect(() => {
-    document.title = 'Phinity Therapy | Therapist'
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const [loading, setLoading] = useState(true)
+  const { sub: id } = useParams()
+  const effectRef = useRef<any>(false)
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -45,42 +37,56 @@ const TherapistPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
+    if (effectRef.current) return
     getReviews()
-    getTherapist(+id!)
-    getServicesByTherapists()
+    getTherapist(id!)
     getIssues()
-    getMenu()
     getBookBlock()
+    getReviewsIO()
+    getHome()
+    getTherapistContent(id!).then(() => {
+      setLoading(false)
+    })
+    effectRef.current = true
   }, [])
 
   if (typeof window === 'undefined' || !window.document) {
     return <></>
   }
+  let issues: Array<Issue> = [],
+    services: Array<Service> = []
+  if (ContentStore.therapist.issues.list) {
+    issues = JSON.parse(JSON.stringify(ContentStore.therapist.issues.list))
+  }
+  if (ContentStore.therapist.services.list) {
+    services = JSON.parse(JSON.stringify(ContentStore.therapist.services.list))
+  }
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <Intro />
             <TherapistBlock />
-            <Services title={ContentStore.therapist.serviceTitle} />
-            <Issues classname="therapist" dt={ContentStore.therapist.issues} />
+            <Services
+              title={ContentStore.therapist.services.title}
+              dt={services.sort((a: Service, b: Service) =>
+                a.title.localeCompare(b.title),
+              )}
+            />
+            <Issues
+              classname="therapist"
+              dt={ContentStore.therapist.issues}
+              arr={issues.sort((a: Issue, b: Issue) =>
+                a.title.localeCompare(b.title),
+              )}
+            />
             <Reviews dt={ContentStore.therapist.reviews} />
             <Contact />
             <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
     </>
   )

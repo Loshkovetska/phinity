@@ -10,7 +10,7 @@
   }
 
   &__vector {
-    transition: 3s transform linear;
+    transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     position: absolute;
     top: 100px;
     z-index: -1;
@@ -63,12 +63,14 @@
   .blogs__item {
     width: 100%;
     margin-right: 0;
-
+    max-width: none;
+    min-width: auto;
     opacity: 0;
-    transition: 0.5s ease opacity;
-
+    transition: 1s ease;
+    transform: translateY(100px);
     &.animated {
       opacity: 1;
+      transform: translateY(0);
     }
     &:not(:first-child) {
       margin-top: 56px;
@@ -95,7 +97,7 @@
       p,
       span {
         display: initial;
-        font-family: 'Montserrat';
+        font-family: 'Montserrat Regular';
         font-style: normal;
         font-weight: 400;
         font-size: 14px;
@@ -110,13 +112,8 @@
     &:hover {
       .blogs__item-cat {
         p {
-          color: #0033cc;
-          text-decoration: underline;
-          text-underline-offset: 3px;
-        }
-        span {
-          text-decoration: underline;
-          text-underline-offset: 3px;
+          //color: #efebe4;
+          color: #222426;
         }
       }
     }
@@ -130,9 +127,39 @@
     width: 413px;
     min-width: 413px;
 
+    .blogs__item {
+      width: 100%;
+      margin-left: 0;
+      &-text {
+        & > p {
+          -webkit-line-clamp: 3;
+        }
+      }
+    }
+
+    .videos__item {
+      width: 100%;
+      display: block;
+      border: 1px solid #222426;
+      max-width: none;
+      min-width: auto;
+      &-title {
+        margin: 0 24px;
+      }
+      &-length {
+        margin: 4px 24px 8px;
+      }
+      &-desc {
+        margin: 0px 24px 24px;
+      }
+    }
+    &-visible {
+      margin-top: 64px;
+    }
+
     & > * {
       opacity: 0;
-      transition: 1s ease opacity;
+      transition: 1s ease-out opacity;
 
       &.animated {
         opacity: 1;
@@ -147,17 +174,45 @@
       font-weight: 500;
       font-size: 18px;
       line-height: 150%;
-      text-transform: uppercase;
       color: #222426;
       margin-bottom: 24px;
 
+      &.cat {
+        display: flex;
+        align-items: center;
+        span {
+          margin-left: 32px;
+          font-family: 'Montserrat Regular';
+          font-size: 16px;
+          display: inline-flex;
+          width: fit-content;
+          position: relative;
+          cursor: pointer;
+          &::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 0;
+            display: block;
+            height: 2px;
+            background: #222426;
+            transition: 0.5s ease-out all;
+          }
+          &:hover {
+            &::after {
+              width: 100%;
+            }
+          }
+        }
+      }
+
       &:not(:first-of-type) {
-        margin-top: 80px;
+        margin-top: 64px;
       }
     }
     &-text {
       text-decoration: none;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -166,8 +221,23 @@
 
       color: #222426;
       cursor: pointer;
-      transition: 0.5s ease color;
+      transition: 0.5s ease-out color;
       &:hover {
+        color: #0033cc;
+      }
+
+      position: relative;
+      width: fit-content;
+      &::after {
+        content: '';
+        width: 0;
+        height: 2px;
+        background: #222426;
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+      }
+      &.active {
         color: #0033cc;
       }
 
@@ -180,17 +250,36 @@
         margin-bottom: 12px;
       }
     }
+    &-video {
+    }
     &-all {
+      width: fit-content;
       margin-top: 37px;
-      font-family: 'Montserrat';
+      font-family: 'Montserrat SemiBold';
       font-style: normal;
       font-weight: 600;
       font-size: 16px;
       line-height: 120%;
       display: flex;
       align-items: center;
-      text-transform: uppercase;
       cursor: pointer;
+      position: relative;
+
+      &::after {
+        content: '';
+        height: 2px;
+        width: 0;
+        bottom: -8px;
+        position: absolute;
+        left: 0;
+        background: #222426;
+        transition: 0.5s ease-out all;
+      }
+      &:hover {
+        &::after {
+          width: 100%;
+        }
+      }
     }
 
     &-list {
@@ -205,7 +294,7 @@
       }
     }
     &-book {
-      margin-top: 86px;
+      margin-top: 64px;
       width: 100%;
       padding: 56px 65px;
       background: #222426;
@@ -221,7 +310,6 @@
         /* or 42px */
 
         text-align: center;
-        text-transform: uppercase;
 
         /* text/Phinity white */
 
@@ -229,7 +317,7 @@
         margin-bottom: 12px;
       }
       p {
-        font-family: 'Montserrat';
+        font-family: 'Montserrat Regular';
         font-style: normal;
         font-weight: 400;
         font-size: 14px;
@@ -288,6 +376,7 @@
     }
 
     &__aside {
+      display: none;
       overflow: auto;
       z-index: 12;
       height: 100vh;
@@ -296,8 +385,12 @@
       right: 0;
       top: 0;
       background: #efebe4;
-      transform: translateX(200%);
-      transition: 1s ease transform 0s;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: 1s ease-out transform, opacity 1s ease;
+      &-visible {
+        display: none;
+      }
       &-close {
         cursor: pointer;
         display: flex;
@@ -308,7 +401,7 @@
 
       &.show {
         transform: translateX(0%);
-        transition: 1s ease transform 0s;
+        opacity: 1;
       }
       &-title {
         margin-bottom: 16px;
@@ -336,6 +429,8 @@
       h3,
       p {
         max-width: 300px;
+        transform: translateY(0);
+        opacity: 1;
       }
 
       .button {
@@ -356,16 +451,21 @@
 
     .blogs__item {
       &-bottom {
-        justify-content: flex-end;
+        justify-content: space-between;
         margin-top: 8px;
       }
-      &-cat {
-        display: none;
+      &-cat p,
+      &-cat span {
+        font-size: 12px;
       }
     }
 
+    &__vector {
+      display: none;
+    }
+
     &__top {
-      margin-bottom: 67px;
+      margin-bottom: 32px;
     }
     &__aside {
       &-text {

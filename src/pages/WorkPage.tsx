@@ -1,29 +1,24 @@
 import { observer } from 'mobx-react'
-import { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router'
-import Footer from '../components/common/Footer'
-import Header from '../components/common/Header'
-import ScrollToTop from '../components/common/ScrollToTop'
-import SearchBox from '../components/common/SearchBox'
-import VacanciesContent from '../components/pages/works/VacanciesContent'
-import useLocoScroll from '../hooks/useLoco'
-import ContentStore, { getMenu, getWork } from '../stores/ContentStore'
-import { getVacancies } from '../stores/DBStore'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import Layout from '../components/common/Layout'
+import Filter from '../components/pages/therapists/Filter'
+import ContentStore, { getHome, getWork } from '../stores/ContentStore'
+import DBStore, {
+  filterVacancies,
+  getVacancies,
+  getWorkFilters,
+} from '../stores/DBStore'
+import { getReviewsIO } from '../stores/GlobalState'
+
+const VacanciesContent = lazy(() =>
+  import('../components/pages/works/VacanciesContent'),
+)
 
 const WorkPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const [service, setService] = useState<any>(null)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [filter, setFilter] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
 
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-    getMenu()
-  }, [])
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -37,31 +32,49 @@ const WorkPage = observer(() => {
   }
 
   useEffect(() => {
+    if (effectRef.current) return
     getVacancies()
-    getWork().then(() => {
-      document.title = `Phinity | ${ContentStore.works.pageTitle}`
-    })
+    getWorkFilters()
+    getReviewsIO()
+    getHome()
+    getWork().then(() => {})
+    effectRef.current = true
   }, [])
 
+  useEffect(() => {
+    if (DBStore.vacancies && ContentStore.works) {
+      setLoading(false)
+    }
+  }, [DBStore.vacancies, ContentStore.works])
+
+  if (!ContentStore.works) return <></>
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <VacanciesContent />
-            <SearchBox />
-            <Footer />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
+      <Filter
+        params={[{ title: 'Category', list: DBStore.worksCategories }] || null}
+        setFilter={(value) => {
+          if (value == null) {
+            setFilter(null)
+            getVacancies()
+          } else {
+            const st: any = {}
+            ;[{ title: 'Category', list: DBStore.worksCategories }]?.forEach(
+              (e: any, i: number) => {
+                st[e.title.replaceAll(' ', '')] = value[`p${i}`]
+              },
+            )
+            setFilter(st)
+            filterVacancies(st)
+          }
+        }}
+      />
     </>
   )
 })

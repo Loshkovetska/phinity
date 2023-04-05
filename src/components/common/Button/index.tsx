@@ -6,7 +6,7 @@ const Button = ({
   type,
   click,
 }: {
-  click: (e?:any) => void
+  click: (e?: any) => void
   classname: string
   text: any
   type?: 'button' | 'submit'

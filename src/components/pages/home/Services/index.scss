@@ -3,7 +3,7 @@
   position: relative;
 
   &__vector {
-    transition: 3s linear transform;
+    transition: 3s ease transform;
     position: absolute;
     top: -32px;
     left: -200px;
@@ -35,7 +35,7 @@
     margin-bottom: 32px;
   }
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -57,10 +57,11 @@
     justify-content: center;
     width: 100%;
     margin: 42px -66px 0;
+    flex-wrap: wrap;
   }
 
   &__item {
-    width: calc(20%);
+    max-width: 200px;
     margin: 40px 66px 0;
     display: flex;
     align-items: center;
@@ -102,28 +103,7 @@
       img {
         width: 100%;
       }
-      &:first-child {
-        width: 76px;
-        height: 76px;
-        margin-left: 0;
-      }
-      &:nth-child(2) {
-        width: 104px;
-        height: 76px;
-      }
-      &:nth-child(4) {
-        width: 158px;
-        height: 54px;
-      }
-      &:nth-child(3) {
-        width: 74px;
-        height: 74px;
-      }
-      &:nth-child(5) {
-        width: 86px;
-        height: 54px;
-        margin-right: 0;
-      }
+      max-width: 150px;
     }
   }
 
@@ -131,35 +111,9 @@
     &__vector {
       display: none;
     }
-  }
 
-  @media (max-width: 365px) {
     &__item {
-      &:first-child {
-        width: 76px;
-        height: 76px;
-        margin-left: 0;
-      }
-      &:nth-child(2) {
-        width: 104px;
-        height: 76px;
-        margin-right: 0;
-      }
-      &:nth-child(4) {
-        width: 158px;
-        height: 54px;
-        margin-right: 0;
-      }
-      &:nth-child(5) {
-        width: 74px;
-        height: 74px;
-        margin-right: 0;
-      }
-      &:nth-child(3) {
-        width: 86px;
-        height: 54px;
-        margin-right: 0;
-      }
+      max-width: 108px;
     }
   }
 }

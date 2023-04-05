@@ -1,1 +1,1 @@
-export const DOMAIN = 'https://phinitydew.romura.space/'
+export const DOMAIN = 'https://admin.phinitytherapy.com/'

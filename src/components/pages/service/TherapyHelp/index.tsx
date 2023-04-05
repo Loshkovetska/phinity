@@ -2,63 +2,67 @@ import { observer } from 'mobx-react'
 import { ReactComponent as Vector } from '../../../../assets/Vector 1.svg'
 import Button from '../../../common/Button'
 import './index.scss'
-import { ReactComponent as Item1 } from '../../../../assets/Frame 31357.svg'
-import { ReactComponent as Item2 } from '../../../../assets/Frame 31361.svg'
-import { ReactComponent as Item3 } from '../../../../assets/Frame 31367.svg'
-import { ReactComponent as Item4 } from '../../../../assets/Frame 31368.svg'
 import { ReactComponent as VectorScroll } from '../../../../assets/Vector 5.svg'
 import GlobalState from '../../../../stores/GlobalState'
 import { useEffect } from 'react'
+import ContentStore from '../../../../stores/ContentStore'
 const TherapyHelp = observer(({ dt }: { dt: any }) => {
   useEffect(() => {
-    const smooth = document.querySelector('.smooth')
+    window.addEventListener('scroll', () => {
+      const smooth = document.querySelector('.smooth')
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        const smooth = document.querySelector('.smooth')
-        const about = smooth!.querySelector('.therapy-help')
-        const btn = smooth!.querySelector('.therapy-help .button')
-        const title = smooth!.querySelector('.therapy-help__title')
-        const text = smooth!.querySelector(
-          '.therapy-help__col-block .therapy-help__text',
-        )
-        const items = smooth!.querySelectorAll('.therapy-help__item')
+      if (!smooth) return;
+      const about = smooth!.querySelector('.therapy-help')
+      const btn = smooth!.querySelector('.therapy-help .button')
+      const title = smooth!.querySelector('.therapy-help__title')
+      const text = smooth!.querySelector(
+        '.therapy-help__col .therapy-help__text',
+      )
+      const items = smooth!.querySelectorAll('.therapy-help__item')
 
-        var bodyRect = smooth!.getBoundingClientRect(),
-          elemRect = about!.getBoundingClientRect(),
-          offset = elemRect.top - bodyRect.top
-        if (args.scroll.y > offset - 500) {
-          about?.classList.add('animated')
-          title?.classList.add('animated')
-          text?.classList.add('animated')
-          btn?.classList.add('animated')
-        }
-        if (args.scroll.y > offset - 300) {
-          items.forEach((i, id) => {
-            i?.classList.add('animated')
-            ;(i as HTMLElement).style.transitionDelay = `${id / 8 + 1}s`
+      var bodyRect = smooth!.getBoundingClientRect(),
+        elemRect = about!.getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top
+
+      let start = window.innerWidth > 768 ? 1000 : 800
+      let nextStart = window.innerWidth > 768 ? 800 : 600
+      if (window.scrollY > offset - start) {
+        about?.classList.add('animated')
+        title?.classList.add('animated')
+        text?.classList.add('animated')
+        btn?.classList.add('animated')
+      }
+      if (window.scrollY > offset - nextStart) {
+        items.forEach((i, id) => {
+          i?.classList.add('animated')
+          ;(i as HTMLElement).style.transitionDelay = `${id / 8 + 0.5}s`
+        })
+      }
+    })
+  }, [])
+  useEffect(() => {
+    setTimeout(() => {
+      const container = document.querySelector('.therapy-help')
+      const vect = document.querySelector('.therapy-help__vector')
+      const smooth = document.querySelector('.smooth');
+      if (!smooth) return;
+      var bodyRect = smooth!.getBoundingClientRect(),
+        elemRect = container!.getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top,
+        offsetBottom =
+          elemRect.bottom - vect!.getBoundingClientRect().height / 2
+
+      window.addEventListener('scroll', () => {
+        if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+          requestAnimationFrame(() => {
+            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+              window.scrollY - offset
+            }px, 0)`
           })
         }
       })
-  }, [GlobalState.locoScroll])
-  useEffect(() => {
-    const container = document.querySelector('.therapy-help')
-    const vect = document.querySelector('.therapy-help__vector')
-    const smooth = document.querySelector('.smooth')
-    var bodyRect = smooth!.getBoundingClientRect(),
-      elemRect = container!.getBoundingClientRect(),
-      offset = elemRect.top - bodyRect.top,
-      offsetBottom = elemRect.bottom - vect!.getBoundingClientRect().height / 2
-
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
-          }px, 0)`
-        }
-      })
-  }, [GlobalState.locoScroll])
+    }, 1000)
+  }, [])
 
   return (
     <section className="therapy-help">
@@ -75,8 +79,7 @@ const TherapyHelp = observer(({ dt }: { dt: any }) => {
               dangerouslySetInnerHTML={{ __html: dt.title }}
             ></div>
           </div>
-
-          <div className="therapy-help__col-block">
+          <div className="therapy-help__subcol">
             <div style={{ overflow: 'hidden' }}>
               <div
                 className="therapy-help__text"
@@ -84,30 +87,40 @@ const TherapyHelp = observer(({ dt }: { dt: any }) => {
               ></div>
             </div>
             {window.innerWidth > 1120 && (
-              <Button
-                classname="blue p18p40 "
-                text={dt.buttonTitle}
-                click={() => {}}
-              />
+              <a
+                className="button blue p18p40 "
+                href={ContentStore.home.intro.buttonLink}
+                target={'_blank'}
+              >
+                <div className="button__text">{dt.buttonTitle}</div>
+              </a>
             )}
           </div>
         </div>
         <div className="therapy-help__list">
-          {dt.items.map((i:any, id:number) => (
+          {dt.items.map((i: any, id: number) => (
             <div className="therapy-help__item" key={id}>
-              <div className="therapy-help__item-num">0{id + 1}</div>
               <div className="therapy-help__item-title">{i.title}</div>
-              <img className="therapy-help__item-img" src={i.icon} />
-              <div className="therapy-help__text">{i.text}</div>
+              <img
+                className="therapy-help__item-img"
+                src={i.icon}
+                alt={i.title}
+              />
+              <div
+                className="therapy-help__text"
+                dangerouslySetInnerHTML={{ __html: i.text }}
+              ></div>
             </div>
           ))}
         </div>
         {window.innerWidth <= 1120 && (
-          <Button
-            classname="blue p18p40 "
-            text={dt.buttonTitle}
-            click={() => {}}
-          />
+          <a
+            className="button blue p18p40 "
+            href={ContentStore.home.intro.buttonLink}
+            target={'_blank'}
+          >
+            <div className="button__text">{dt.buttonTitle}</div>
+          </a>
         )}
       </div>
     </section>

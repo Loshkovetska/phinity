@@ -8,7 +8,7 @@
   z-index: 2;
   .button {
     opacity: 0;
-    transition: 0.5s ease-in opacity 3.5s;
+    transition: 0.5s ease-out opacity 3.5s;
     display: none;
     &.animated {
       opacity: 1;
@@ -21,6 +21,7 @@
     }
 
     &.images {
+      width: fit-content;
       position: relative;
 
       &.animated {
@@ -35,14 +36,20 @@
     &.left {
       width: 100%;
       opacity: 0;
-      transition: 0.5s ease-in opacity;
+      transition: 0.5s ease-out opacity;
+      height: 690px;
+      max-width: 521px;
+      object-fit: cover;
     }
     &.right {
       right: -207px;
       bottom: -64px;
       position: absolute;
       opacity: 0;
-      transition: 0.5s ease-in opacity 0.5s;
+      transition: 0.5s ease-out opacity 0.5s;
+      width: 305px;
+      height: 404px;
+      object-fit: cover;
     }
   }
 
@@ -52,7 +59,7 @@
     font-weight: 400;
     font-size: 80px;
     line-height: 110%;
-    transition: 1.5s transform ease 1s;
+    transition: 1.5s transform ease 0.5s;
     transform-origin: bottom left;
     transform: rotate(-10deg) translate3d(0, -130%, 0);
     &.animated {
@@ -61,7 +68,7 @@
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -71,7 +78,7 @@
     opacity: 0.8;
     margin: 32px 0 0 180px;
     transform: translateY(-200%);
-    transition: 1s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s;
+    transition: 1s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1s;
     &.animated {
       transform: translateY(0);
     }
@@ -91,8 +98,13 @@
     &__col.images {
       width: 40%;
     }
+
+    &__img.left{
+          height: 446px;
+    }
     &__img.right {
-      width: 78%;
+      width: 230px;
+      height: 300px;
     }
   }
 
@@ -145,6 +157,9 @@
     &__col.images {
       width: 100%;
       margin-bottom: 8px;
+    }
+    &__img.left{
+      max-width: none;
     }
 
     &__col {

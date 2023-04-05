@@ -27,7 +27,7 @@ const Pagination = observer(
     const paginationRange = usePagination({
       currentPage: page,
       totalCount: getTotal(),
-      siblingCount: 1,
+      siblingCount: 2,
       pageSize: itemsPerPage,
     })
 
@@ -58,7 +58,10 @@ const Pagination = observer(
       <div className="pagination">
         <ul className={classNames('pagination-list')}>
           <li
-            className={classNames('pagination-arrow prev', page === 1 && 'disabled')}
+            className={classNames(
+              'pagination-arrow prev',
+              page === 1 && 'disabled',
+            )}
             onClick={onPrevious}
           >
             <SliderArrow />
@@ -131,7 +134,11 @@ const PagiMore = ({ changePage }: { changePage: (value: number) => void }) => {
   })
 
   return (
-    <li className="pagination-break" onClick={getLimits} ref={ref}>
+    <li
+      className={classNames('pagination-break', showPages && 'active')}
+      onClick={getLimits}
+      ref={ref}
+    >
       <More />
       <PagiPop
         isActive={showPages}

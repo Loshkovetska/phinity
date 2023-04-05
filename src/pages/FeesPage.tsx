@@ -1,38 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Reviews from '../components/pages/home/Reviews'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import { getReviews, getImages } from '../stores/DBStore'
-import AboutContent from '../components/pages/about/AboutContent'
-import AboutPhinity from '../components/pages/about/AboutPhinity'
-import OurTeam from '../components/pages/about/OutTeam'
-import Phylosophy from '../components/pages/about/Phylosophy'
-import PhinityAdvantages from '../components/pages/services/PhitityAdvantages'
-import ChooseUs from '../components/pages/about/ChooseUs'
-import OurClinic from '../components/pages/about/OurClinic'
-import Contact from '../components/pages/about/Contact'
+import { Suspense, useEffect, useRef, useState, lazy } from 'react'
+import { getReviews } from '../stores/DBStore'
 import { observer } from 'mobx-react'
-import Servives from '../components/pages/home/Services'
-import FeesTable from '../components/pages/fees/FeesTable'
-import Rules from '../components/pages/fees/Rules'
-import Benefits from '../components/pages/fees/Benefits'
-import ContentStore, { getMenu } from '../stores/ContentStore'
+import ContentStore, { getFeesContent, getHome } from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import Layout from '../components/common/Layout'
+
+const Servives = lazy(() => import('../components/pages/home/Services'))
+const FeesTable = lazy(() => import('../components/pages/fees/FeesTable'))
+const Rules = lazy(() => import('../components/pages/fees/Rules'))
+const Benefits = lazy(() => import('../components/pages/fees/Benefits'))
 
 const FeesPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    document.title = 'Phinity Therapy | About'
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const [loading, setLoading] = useState(true)
+
+  const effectRef = useRef<any>(false)
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -42,9 +24,15 @@ const FeesPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
-    getImages()
+    if (effectRef.current) return
+
     getReviews()
-    getMenu()
+    getReviewsIO()
+    getHome()
+    getFeesContent().then(() => {
+      setLoading(false)
+    })
+    effectRef.current = true
   }, [])
   if (typeof window === 'undefined' || !window.document) {
     return <></>
@@ -52,26 +40,16 @@ const FeesPage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <FeesTable />
             <Rules />
             <Benefits />
-            <Servives dt={ ContentStore.fees.services} />
-            <div className="space-block "></div>
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+            <Servives dt={ContentStore.fees.services} />
+          </Suspense>
+          <div className="space-block "></div>
+        </Layout>
       )}
     </>
   )

@@ -6,11 +6,17 @@ import { ReactComponent as Hands } from '../../../../assets/Hands.svg'
 import { useNavigate } from 'react-router'
 import Button from '../../../common/Button'
 import ContentStore from '../../../../stores/ContentStore'
+import GlobalState from '../../../../stores/GlobalState'
 
 const ThanksContent = observer(() => {
-  const navigate = useNavigate()
-
   if (!ContentStore.thanks) return <></>
+
+  const linksL = GlobalState.links
+  let main = ''
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+  }
+
   return (
     <section className="thanks animated fadeIn">
       <Ellipse1 className="therapist-intro__vector w31" />
@@ -21,10 +27,10 @@ const ThanksContent = observer(() => {
       <Ellipse1 className="therapist-intro__vector w185" />
       <Ellipse1 className="therapist-intro__vector w254" />
       <div className="thanks__container">
-        <div
+        <h1
           className="thanks__title"
           dangerouslySetInnerHTML={{ __html: ContentStore.thanks.title }}
-        ></div>
+        ></h1>
         <Hands className="thanks__hands" />
         <div
           className="thanks__text"
@@ -34,12 +40,12 @@ const ThanksContent = observer(() => {
           <Button
             classname="black-border p18p40"
             text={ContentStore.thanks.backButton}
-            click={() => navigate(-1)}
+            click={() => window.history.go(-1)}
           />
           <Button
             classname="blue p18p40"
             text={ContentStore.thanks.homeButton}
-            click={() => navigate('/')}
+            click={() => (window.location.href = main)}
           />
         </div>
       </div>

@@ -7,8 +7,8 @@ import ContentStore from '../../../../stores/ContentStore'
 
 const ChooseUs = observer(() => {
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      GlobalState.locoScroll.on('scroll', (args: any) => {
+
+      window.addEventListener('scroll', () => {
         const smooth = document.querySelector('.smooth')
         const issues = smooth!.querySelector('.choose-us')
         const items = smooth!.querySelectorAll('.choose-us__item')
@@ -18,22 +18,22 @@ const ChooseUs = observer(() => {
           elemRect = issues!.getBoundingClientRect(),
           offset = elemRect.top - bodyRect.top
 
-        if (args.scroll.y > offset - 500) {
+        if (window.scrollY > offset - 1000) {
           issues?.classList.add('animated')
           title?.classList.add('animated')
           text?.classList.add('animated')
 
           items.forEach((i, id) => {
             i?.classList.add('animated')
-            ;(i as any).style.transitionDelay = `${id / 5 + 2}s`
+            ;(i as any).style.transitionDelay = `${id / 5 + 1.9}s`
           })
         }
       })
-    }
-  }, [GlobalState.locoScroll])
+ 
+  }, [])
 
   useEffect(() => {
-    if (GlobalState.locoScroll && window.innerWidth <= 768) {
+    if (window.innerWidth <= 768) {
       const smooth = document.querySelector('.smooth')
       const cont = document.querySelector('.choose-us')
       const next = cont?.nextElementSibling
@@ -44,11 +44,10 @@ const ChooseUs = observer(() => {
       var offset = contRect.top - bodyRect.top,
         offsetBottom = nextRect.top - v2!.getBoundingClientRect().height
 
-      GlobalState.locoScroll &&
-        GlobalState.locoScroll.on('scroll', (args: any) => {
-          if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
+      window.addEventListener('scroll', () => {
+          if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
             ;(v2 as HTMLElement).style.transform = `translate3d(0, ${
-              args.scroll.y - offset
+              window.scrollY - offset
             }px, 0)`
           }
         })

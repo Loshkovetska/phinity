@@ -10,9 +10,9 @@ import { ReactComponent as Tel } from '../../../../assets/contact/Component 95 (
 import { Link } from 'react-router-dom'
 import GlobalState from '../../../../stores/GlobalState'
 import ContentStore from '../../../../stores/ContentStore'
+import { DOMAIN } from '../../../../mocks/doman'
 
 const Contact = observer(({ dt }: { dt: any }) => {
-  const navigate = useNavigate()
   const [st, setState] = useState({
     name: '',
     isNameFocus: false,
@@ -32,11 +32,11 @@ const Contact = observer(({ dt }: { dt: any }) => {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
   }
 
-  //   const phoneValidate = (phone: string) => {
-  //     return /^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
-  //       phone,
-  //     )
-  //   }
+  const linksL = GlobalState.links
+  let thanks = ''
+  if (linksL) {
+    thanks = linksL.find((l: any) => l.id == 635).link
+  }
 
   const submit = () => {
     let errs = {
@@ -68,33 +68,36 @@ const Contact = observer(({ dt }: { dt: any }) => {
     fd.append('lastname', st.lastname)
     fd.append('email', st.email)
     fd.append('phone', st.phone)
-    fd.append('msg', st.msg)
-    fd.append('status', 'contact')
-    navigate('/thanks')
-    // fetch('/', {
-    //   method: 'POST',
-    //   body: fd,
-    // }).then(() => navigate('/thanks'))
+    fd.append('message', st.msg)
+    fd.append('status', 'mail')
+    fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    }).then(() => (window.location.href = thanks))
   }
 
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        const smooth = document.querySelector('.smooth')
-        const issues = smooth!.querySelector('.contact-block')
+    window.addEventListener('scroll', () => {
+      const smooth = document.querySelector('.smooth')
+      const issues = smooth!.querySelector('.contact-block')
 
-        var bodyRect = smooth!.getBoundingClientRect(),
-          elemRect = issues!.getBoundingClientRect(),
-          offset = elemRect.top - bodyRect.top
+      var bodyRect = smooth!.getBoundingClientRect(),
+        elemRect = issues!.getBoundingClientRect(),
+        offset = elemRect.top - bodyRect.top
 
-        if (args.scroll.y > offset - 500) {
-          issues?.classList.add('animated')
-        }
-      })
-    }
-  }, [GlobalState.locoScroll])
+      if (window.scrollY > offset - 1000) {
+        issues?.classList.add('animated')
+      }
+    })
+  }, [])
 
-  if (!ContentStore.about.contact) return <></>
+  const links = GlobalState.links
+  let term = ''
+  if (links) {
+    term = links.find((l: any) => l.id == 591).link
+  }
+
+  if (!ContentStore.about.contact ) return <></>
 
   return (
     <section className="contact-block">
@@ -189,8 +192,8 @@ const Contact = observer(({ dt }: { dt: any }) => {
             </div>
           </div>
           <p className="contact-block__sub-text">
-            To view our terms {'&'} conditions of booking sessions,{' '}
-            <Link to={'/terms'}>click here.</Link>
+            To View Our Terms of Use,{' '}
+            <a href={term}>Click Here.</a>
           </p>
           <Button
             classname="light-blue"

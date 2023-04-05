@@ -8,49 +8,49 @@ import GlobalState from '../stores/GlobalState'
 export default function useLocoScroll(start: boolean) {
   const { pathname } = useLocation()
   useEffect(() => {
-    if (!start) return
-    let locoScroll: any = null
-    const scrollEl = document.querySelector('.smooth')
+    // if (!start) return
+    // let locoScroll: any = null
+    // const scrollEl = document.querySelector('.smooth')
 
-    if (!scrollEl) return
+    // if (!scrollEl) return
 
-    locoScroll = new LocomotiveScroll({
-      el: scrollEl,
-      smooth: true,
-      multiplier: 0.5,
-      repeat: true,
-      getDirection: true,
-      getSpeed: true,
-      elMobile: scrollEl,
-      smartphone: {
-        breakpoint: 0,
-        smooth: true,
-      },
-      tablet: {
-        breakpoint: 0,
-        smooth: true,
-      },
-      reloadOnContextChange: true,
-    })
+    // locoScroll = new LocomotiveScroll({
+    //   el: scrollEl,
+    //   smooth: true,
+    //   // lerp: 0.1,
+    //   multiplier: 1,
+    //   repeat: true,
+    //   getDirection: true,
+    //   elMobile: scrollEl,
+    //   smartphone: {
+    //     breakpoint: 0,
+    //     smooth: true,
+    //   },
+    //   tablet: {
+    //     breakpoint: 0,
+    //     smooth: true,
+    //   },
+    //   reloadOnContextChange: true,
+    // })
 
-    window.addEventListener('resize', () => locoScroll && locoScroll.update())
+    // window.addEventListener('resize', () => locoScroll && locoScroll.update())
+    // setTimeout(() => {
 
-    setInterval(() => {
-      locoScroll && locoScroll.update()
-    }, 1000)
+    //   locoScroll && locoScroll.update()
+    // }, 2000)
 
-    runInAction(() => {
-      GlobalState.locoScroll = locoScroll
-    })
+    // runInAction(() => {
+    //   GlobalState.locoScroll = locoScroll
+    // })
 
     return () => {
-      if (locoScroll) {
-        locoScroll.destroy()
-        locoScroll = null
-        runInAction(() => {
-          GlobalState.locoScroll = locoScroll
-        })
-      }
+      // if (locoScroll) {
+      //   locoScroll.destroy()
+      //   locoScroll = null
+      //   runInAction(() => {
+      //     GlobalState.locoScroll = locoScroll
+      //   })
+      // }
     }
   }, [start, pathname])
 }

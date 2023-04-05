@@ -12,7 +12,7 @@ import GlobalState from '../../../../stores/GlobalState'
 import ContentStore from '../../../../stores/ContentStore'
 const FaqList = observer(() => {
   useEffect(() => {
-    if (!DBStore.faqs) return;
+    if (!DBStore.faqs) return
     const smooth = document.querySelector('.smooth')
     const issues = smooth!.querySelector('.faq-list')
     const title = smooth!.querySelector('.faq-list__title')
@@ -30,8 +30,9 @@ const FaqList = observer(() => {
 
     setTimeout(() => {
       items.forEach((i, id) => {
-        i?.classList.add('animated')
-        ;(i as HTMLDivElement).style.transitionDelay = `${id / 6 + 0.5}s`
+        setTimeout(() => {
+          i?.classList.add('animated')
+        }, (id / 6 + 0.5) * 1000)
       })
     }, 1000)
   }, [DBStore.faqs])
@@ -48,31 +49,36 @@ const FaqList = observer(() => {
       offset = contRect.top - bodyRect.top,
       offsetBottom = contRect.bottom - contRect.height / 2
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
-          }px, 0)`
-        }
-      })
-  }, [GlobalState.locoScroll, DBStore.faqs])
+    window.addEventListener('scroll', () => {
+      if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+        ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+          window.scrollY - offset
+        }px, 0)`
+      }
+    })
+  }, [DBStore.faqs])
 
   if (!DBStore.faqs) return <></>
+
+  let main = ''
+  const linksL = GlobalState.links
+  if (linksL) {
+    main = linksL.find((l: any) => l.id == 2).link
+  }
 
   return (
     <section className="faq-list">
       <PageLinks
         links={[
-          { title: ContentStore.faq.mainPageTitle, link: '/' },
-          { title: ContentStore.faq.pageTitle, link: 'faq' },
+          { title: ContentStore.faq.mainPageTitle, link: main },
+          { title: ContentStore.faq.pageTitle.toUpperCase(), link: 'FAQ' },
         ]}
       />
       <Vector className="faq-list__vector" />
       <div className="faq-list__container">
         <div style={{ overflow: 'hidden' }}>
           {' '}
-          <div className="faq-list__title">{ContentStore.faq.title}</div>
+          <h1 className="faq-list__title">{ContentStore.faq.title}</h1>
         </div>
 
         <div className="faq-list__list">
@@ -104,7 +110,10 @@ const FaqItem = ({ f }: { f: Faq }) => {
           className={classNames('faq-list__item-icon', active && 'active')}
         />
       </div>
-      <div className="faq-list__item-text">{f.text}</div>
+      <div
+        className="faq-list__item-text"
+        dangerouslySetInnerHTML={{ __html: f.text }}
+      ></div>
     </div>
   )
 }

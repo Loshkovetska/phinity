@@ -4,7 +4,7 @@
   position: relative;
   opacity: 0;
   z-index: 1;
-  transition: 0.5s ease-in opacity;
+  transition: 0.5s ease-out opacity;
   &.animated {
     opacity: 1;
   }
@@ -23,7 +23,7 @@
     &.desk {
       right: -80px;
       top: -25%;
-      transition: 3s linear transform;
+      transition: 3s ease transform;
       transform: rotateY(180deg);
       @media (max-width: 1439px) {
         right: -16px;
@@ -31,16 +31,36 @@
     }
     &.mob {
       display: none;
-      transition: 2.5s linear transform;
+      transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     }
   }
 
   &__img {
     width: 100%;
     opacity: 0;
-    transition: 0.5s ease-in opacity 1.5s;
+    transition: 0.5s ease-out opacity 1s;
     &.animated {
       opacity: 1;
+    }
+    &-cont {
+      width: 100%;
+      display: flex;
+      overflow: hidden;
+      isolation: isolate;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      // @media (max-width: 1024px) {
+      //   max-height: 400px;
+      // }
+
+      // @media (max-width: 480px) {
+      //   max-height: 210px;
+      // }
     }
   }
 
@@ -76,13 +96,12 @@
       font-weight: 400;
       font-size: 16px;
       line-height: 140%;
-      text-transform: uppercase;
       color: #222426;
       opacity: 0.8;
       margin-bottom: 8px;
     }
     &-text {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -100,7 +119,7 @@
     }
 
     opacity: 0;
-    transition: 0.5s ease-in opacity;
+    transition: 0.5s ease-out opacity;
     &.animated {
       opacity: 1;
     }
@@ -164,10 +183,6 @@
   }
 
   @media (max-width: 375px) {
-    &__img {
-      min-height: 478px;
-      max-height: 478px;
-    }
     &__item {
       &:nth-child(2n) {
         border-left: none;
@@ -178,8 +193,5 @@
     }
   }
   @media (max-width: 370px) {
-    &__img {
-      min-height: auto;
-    }
   }
 }

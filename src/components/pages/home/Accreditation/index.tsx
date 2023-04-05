@@ -18,15 +18,16 @@ const Accreditation = observer(({ accreditation }: { accreditation: any }) => {
       offset = contRect.top - bodyRect.top,
       offsetBottom = contRect.top + contRect.height / 3
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
-          }px, 0)`
+    window.addEventListener('scroll', () => {
+        if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+          requestAnimationFrame(() => {
+            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+              window.scrollY - offset
+            }px, 0)`
+          })
         }
       })
-  }, [GlobalState.locoScroll])
+  }, [])
 
   return (
     <section className="accreditation">
@@ -41,7 +42,7 @@ const Accreditation = observer(({ accreditation }: { accreditation: any }) => {
           >
             <div
               className="accreditation__title"
-              dangerouslySetInnerHTML={{ __html: accreditation.title }}
+              dangerouslySetInnerHTML={{ __html: accreditation?.title }}
             ></div>
           </div>
           {window.innerWidth > 768 ? (
@@ -54,7 +55,7 @@ const Accreditation = observer(({ accreditation }: { accreditation: any }) => {
             >
               <div
                 className="accreditation__text"
-                dangerouslySetInnerHTML={{ __html: accreditation.text }}
+                dangerouslySetInnerHTML={{ __html: accreditation?.text }}
               ></div>
             </div>
           ) : (
@@ -67,15 +68,15 @@ const Accreditation = observer(({ accreditation }: { accreditation: any }) => {
             >
               <div
                 className="accreditation__text"
-                dangerouslySetInnerHTML={{ __html: accreditation.text }}
+                dangerouslySetInnerHTML={{ __html: accreditation?.text }}
               ></div>
             </div>
           )}
         </div>
         <div className="accreditation__list">
-          {accreditation.imgs.map((i: any, id: number) => (
+          {accreditation?.imgs?.map((i: any, id: number) => (
             <div className="accreditation__item" key={id}>
-              <img src={i} />
+              <img src={i.src} alt={i?.alt} />
             </div>
           ))}
         </div>

@@ -3,7 +3,7 @@
   position: relative;
   padding-top: 140px;
   opacity: 0;
-  transition: 0.5s ease-in opacity;
+  transition: 0.5s ease-out opacity;
   &.animated {
     opacity: 1;
   }
@@ -22,12 +22,11 @@
     font-weight: 500;
     font-size: 32px;
     line-height: 130%;
-    text-transform: uppercase;
     color: #222426;
 
     opacity: 0.8;
 
-    transition: 1.5s transform ease 0.5s;
+    transition: 1.5s transform ease;
     transform-origin: bottom left;
     transform: rotate(-10deg) translate3d(0, -130%, 0);
     &.animated {
@@ -51,7 +50,7 @@
     img,
     .phylosophy__text {
       opacity: 0;
-      transition: 0.5s ease-in opacity;
+      transition: 0.5s ease-out opacity;
     }
 
     &.animated {
@@ -63,7 +62,7 @@
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
@@ -84,7 +83,7 @@
     top: -25%;
     width: 664px;
     height: 713px;
-    transition: 3s linear transform;
+    transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     @media (max-width: 1439px) {
       left: -16px;
     }

@@ -24,7 +24,7 @@
     top: 100px;
     right: -16px;
     display: none;
-    transition: 2.5s linear all;
+    transition: 2.5s ease-out all;
     z-index: -1;
   }
 
@@ -50,7 +50,8 @@
 
         .contact-content__title,
         .contact-content__text,
-        .contact-content__bold-text {
+        .contact-content__bold-text,
+        p {
           color: #efebe4;
         }
 
@@ -61,10 +62,8 @@
           background: #efebe4;
 
           &:hover {
-            &::before,
-            &::after {
-              background: #222426;
-            }
+            background: #222426;
+
             .button__text {
               color: #efebe4;
             }
@@ -90,9 +89,14 @@
     display: flex;
     flex-direction: column;
     padding: 24px 80px 24px 57px;
-    height: 50%;
+    // height: 50%;
     transition: 1s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
     opacity: 0;
+    flex-grow: 1;
+
+    @media (max-width: 768px) {
+      flex-grow: 0;
+    }
     &.animated {
       opacity: 1;
     }
@@ -103,21 +107,28 @@
 
     &:first-child {
       &:hover {
-        background: #c1f4f3;
+        background: #222426;
+        .contact-content__title {
+          color: #efebe4;
+        }
+        .contact-content__text,
+        .contact-content__bold-text,
+        p {
+          color: #efebe4;
+        }
         .button {
           &__text {
-            color: #222426;
+            color: #efebe4;
           }
-          background: #efebe4;
-          border-color: #222426;
+          background: #0033cc;
+
           &:hover {
-            &::before,
-            &::after {
-              background: #222426;
-            }
+            color: #efebe4;
             .button__text {
-              color: #efebe4;
+              color: #222426;
             }
+            background: #efebe4;
+            border-color: #efebe4;
           }
         }
       }
@@ -133,7 +144,8 @@
 
         .contact-content__title,
         .contact-content__text,
-        .contact-content__bold-text {
+        .contact-content__bold-text,
+        p {
           color: #efebe4;
         }
         .button {
@@ -143,10 +155,7 @@
           background: #efebe4;
           border-color: #222426;
           &:hover {
-            &::before,
-            &::after {
-              background: #222426;
-            }
+            background: #222426;
             .button__text {
               color: #efebe4;
             }
@@ -181,7 +190,7 @@
   }
   &__text {
     transition: 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) color;
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -222,7 +231,6 @@
     font-weight: 500;
     font-size: 24px;
     line-height: 150%;
-    text-transform: uppercase;
   }
 
   @media (max-width: 1200px) {

@@ -5,7 +5,6 @@ import './index.scss'
 import { ReactComponent as Vector } from '../../../../assets/Vector 9.svg'
 import ContentStore from '../../../../stores/ContentStore'
 const Benefits = observer(() => {
-
   useEffect(() => {
     const smooth = document.querySelector('.smooth')
     const about = smooth!.querySelector('.benefits')
@@ -17,13 +16,13 @@ const Benefits = observer(() => {
       elementTop = about!.getBoundingClientRect().top,
       offset = elementTop - bodyTop
 
-    if (GlobalState.locoScroll) {
-      ;(GlobalState.locoScroll as any).on('scroll', (args: any) => {
-        if (args.scroll.y > offset - 500) {
+
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > offset - 500) {
           about?.classList.add('animated')
         }
 
-        if (args.scroll.y > offset - 200) {
+        if (window.scrollY > offset - 200) {
           title?.classList.add('animated')
           text?.classList.add('animated')
           setTimeout(() => {
@@ -31,8 +30,8 @@ const Benefits = observer(() => {
           }, 2000)
         }
       })
-    }
-  }, [GlobalState.locoScroll])
+    
+  }, [ContentStore.fees.benefits])
 
   useEffect(() => {
     const container = document.querySelector('.benefits')
@@ -44,19 +43,20 @@ const Benefits = observer(() => {
       offset = contRect.top - bodyRect.top,
       offsetBottom = contRect.bottom - contRect.height / 2
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
-          }px, 0) rotateX(180deg) rotateY(${
-            window.innerWidth > 768 ? 180 : 0
-          }deg)`
+    window.addEventListener('scroll', () => {
+        if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+          requestAnimationFrame(() => {
+            ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+              window.scrollY - offset
+            }px, 0) rotateX(180deg) rotateY(${
+              window.innerWidth > 768 ? 180 : 0
+            }deg)`
+          })
         }
       })
-  }, [GlobalState.locoScroll])
+  }, [])
 
-  if(!ContentStore.fees.benefits)return <></>
+  if (!ContentStore.fees.benefits) return <></>
   return (
     <section className="benefits">
       <Vector className="benefits__vector" />
@@ -78,10 +78,12 @@ const Benefits = observer(() => {
         </div>
         <div className="benefits__row">
           <div style={{ overflow: 'hidden' }}>
-            <div className="benefits__title"
-            dangerouslySetInnerHTML={{ __html: ContentStore.fees.benefits.title }}>
-
-            </div>
+            <div
+              className="benefits__title"
+              dangerouslySetInnerHTML={{
+                __html: ContentStore.fees.benefits.title,
+              }}
+            ></div>
           </div>
           <div className="benefits__list">
             {ContentStore.fees.benefits.list?.map((li, i) => (

@@ -27,7 +27,7 @@
     color: #222426;
     margin-bottom: 70px;
     animation-duration: 1s;
-    transition: 1.5s transform ease;
+    transition: 1.5s transform ease-out;
     transform-origin: bottom left;
     transform: rotate(-10deg) translate3d(0, -130%, 0);
     &.animated {
@@ -44,10 +44,11 @@
   }
 
   &__item {
-    width: calc(100% / 4);
+    width: calc(100% / 3);
     padding: 25px 8px 30px 16px;
     border: 1px solid black;
-    transition: 1s transform cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    transition: 1s transform ease-out;
+    //cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
     transform: translateY(150%);
     &.animated {
@@ -59,7 +60,6 @@
       font-weight: 500;
       font-size: 24px;
       line-height: 150%;
-      text-transform: uppercase;
       color: #222426;
       margin-bottom: 14px;
       width: 90%;
@@ -68,7 +68,7 @@
       }
     }
     &-text {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 16px;
@@ -97,22 +97,19 @@
 
   @media (max-width: 1120px) {
     &__list {
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(2, calc(50% - 10px));
+      column-gap: 20px;
+      row-gap: 20px;
     }
 
     &__item {
       transform: translateY(1000%);
       transition: 1.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95);
-      width: calc(50% - 20px);
+      width: 100%;
 
-      &:nth-child(2n + 1) {
-        margin-right: 20px;
-      }
-
-      &2,
-      &3 {
-        margin-top: 20px;
+      &:not(:first-child) {
+        margin-left: 0;
       }
     }
   }
@@ -158,10 +155,11 @@
     &__title {
       font-weight: 400;
       font-size: 30px;
-      margin-bottom: 4px;
+      margin-bottom: 24px;
     }
     &__list {
-      flex-direction: column;
+      grid-template-columns: repeat(1, 100%);
+      column-gap: 0;
     }
     &__vector {
       display: block;
@@ -173,10 +171,6 @@
     &__item {
       position: relative;
       width: 100%;
-      margin-top: 20px;
-      &:not(:first-child) {
-        margin-left: 0;
-      }
       &:last-child {
         display: none;
       }

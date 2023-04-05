@@ -3,7 +3,7 @@
   padding-top: 133px;
   position: relative;
   opacity: 0;
-  transition: 0.5s ease-in opacity;
+  transition: 0.5s ease-out opacity;
   &.animated {
     opacity: 1;
   }
@@ -11,7 +11,7 @@
     width: 100%;
     height: 100%;
     position: relative;
-    max-width: 1440px;
+    max-width: 1280px;
     margin: 0 auto;
   }
   &__top {
@@ -36,7 +36,7 @@
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -46,9 +46,17 @@
     opacity: 0.8;
     max-width: 450px;
     transform: translateY(-120%);
-    transition: 0.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s;
+    transition: 0.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1s;
     &.animated {
       transform: translateY(0);
+    }
+  }
+
+  .slick-dots {
+    opacity: 0;
+
+    &.animated {
+      opacity: 1;
     }
   }
   &__vector {
@@ -56,7 +64,7 @@
     &.desk {
       right: -370px;
       top: 53px;
-      transition: 3s linear transform;
+      transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
       width: 940.44px;
       height: 832.84px;
       transform: rotate(180deg);
@@ -68,14 +76,36 @@
       display: none;
       left: -16px;
       top: 200px;
-      transition: 2.5s linear transform;
+      transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     }
   }
 
+  &__list {
+    &-center {
+      display: flex;
+      justify-content: center;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1410px) {
+      width: 90%;
+      margin: 0 auto;
+    }
+    @media (max-width: 1023px) {
+      width: 100%;
+    }
+  }
+
+  .slider__list {
+    margin-left: 0;
+
+    padding-left: 0;
+  }
+
   &__item {
-    min-width: 385px;
-    width: 385px;
-    height: 510px;
+    height: 410px;
+    min-width: 300px;
     img {
       width: 100%;
       height: 100%;
@@ -86,9 +116,22 @@
       margin-right: 19px;
     }
     opacity: 0;
-    transition: 0.5s ease-in opacity;
+    transition: 0.5s ease-out opacity;
     &.animated {
       opacity: 1;
+    }
+  }
+
+
+  @media (max-width: 1280px) {
+    &__item {
+      height: 360px;
+    }
+  }
+
+  @media (max-width: 1150px) {
+    &__item {
+      height: 337px;
     }
   }
 
@@ -102,6 +145,9 @@
     &__title {
       font-size: 48px;
       margin-bottom: 8px;
+    }
+    &__item {
+      height: 450px;
     }
   }
 
@@ -128,17 +174,38 @@
     }
 
     &__item {
-      min-width: 307px;
-      width: 307px;
-      height: 407px;
+      height: 410px;
     }
   }
 
-  @media (max-width: 490px) {
-    &__list {
-      .slider__bottom {
-        margin: 0 0 0 0;
-      }
+  @media (max-width: 576px) {
+    &__item {
+      height: 350px;
     }
+  }
+  @media (max-width: 480px) {
+    &__item {
+      height: 290px;
+    }
+  }
+
+  @media (max-width: 430px) {
+    &__item {
+      min-width: 180px;
+      height: 250px;
+    }
+  }
+
+  @media (max-width: 375px) {
+    &__item {
+      height: 210px;
+    }
+  }
+
+  @media (max-width: 330px) {
+    &__item {
+      min-width: 180px;
+    }
+
   }
 }

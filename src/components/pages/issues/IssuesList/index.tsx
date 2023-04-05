@@ -16,9 +16,11 @@ import { ReactComponent as V5 } from '../../../../assets/issues/Vector 12.svg'
 import { ReactComponent as V6 } from '../../../../assets/issues/Vector 13.svg'
 import Letters from '../../../common/Letters'
 import { useEffect, useState } from 'react'
-import GlobalState from '../../../../stores/GlobalState'
-import { Link } from 'react-router-dom'
+import GlobalState, {
+  changeTheraFilterState,
+} from '../../../../stores/GlobalState'
 import ContentStore from '../../../../stores/ContentStore'
+
 const IssuesList = observer(() => {
   const [letter, setLetter] = useState<string>('A')
   const [list, setList] = useState<any>(null)
@@ -36,12 +38,18 @@ const IssuesList = observer(() => {
     ]
   }
   const getList = (letter: string): any => {
+    const sortArr = DBStore.issues?.sort((a, b) =>
+      a.title.localeCompare(b.title),
+    )
     let arrs =
       window.innerWidth > 768
-        ? DBStore.issues
-        : DBStore.issues?.filter(
-            (s) => s.title[0].toLowerCase() == letter.toLocaleLowerCase(),
+        ? sortArr
+        : sortArr?.filter(
+            (s) =>
+              s.title[0].toLowerCase().trim() ==
+              letter.toLocaleLowerCase().trim(),
           )
+
     let list: any = {}
     arrs?.forEach((em) => {
       let section: string = em.title.trim().toLocaleUpperCase().charAt(0)
@@ -55,8 +63,8 @@ const IssuesList = observer(() => {
   }
 
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      GlobalState.locoScroll.on('scroll', (args: any) => {
+    if (DBStore.issues) {
+      window.addEventListener('scroll', (args: any) => {
         const smooth = document.querySelector('.smooth')
         const issues = smooth!.querySelector('.issues-list')
         if (!issues) return
@@ -74,26 +82,31 @@ const IssuesList = observer(() => {
           elemRect = issues!.getBoundingClientRect(),
           offset = elemRect.top - bodyRect.top
 
-        if (args.scroll.y > offset - 500) {
+        if (window.scrollY > offset - 1000) {
           issues?.classList.add('animated')
         }
-        if (args.scroll.y > offset - 500) {
+        if (window.scrollY > offset - 800) {
           title?.classList.add('animated')
           button?.classList.add('animated')
+
+          if (lettersBlock) {
+            letters.forEach((i, id) => {
+              ;(i as any).classList.add('animated')
+              ;(i as HTMLElement).style.transitionDelay = `${id / 8}s`
+            })
+          }
+
+          if (window.scrollY > offset - 500) {
+            const list = document.querySelector('.issues-list__list')
+            list?.classList.add('animated')
+          }
+
           items.forEach((i, id) => {
             elemRect = i!.getBoundingClientRect()
             offset = elemRect.top - bodyRect.top
-            if (args.scroll.y > offset - 600) {
+            if (window.scrollY > offset - 1200) {
               i?.classList.add('animated')
             }
-          })
-        }
-        elemRect = lettersBlock!.getBoundingClientRect()
-        offset = elemRect.top - bodyRect.top
-        if (args.scroll.y > offset - 300) {
-          letters.forEach((i, id) => {
-            ;(i as any).classList.add('animated')
-            ;(i as HTMLElement).style.transitionDelay = `${id / 8}s`
           })
         }
 
@@ -102,70 +115,136 @@ const IssuesList = observer(() => {
           if (btn) {
             elemRect = btn!.getBoundingClientRect()
             offset = elemRect.top - bodyRect.top
-            if (args.scroll.y > offset - 500) {
+            if (window.scrollY > offset - 500) {
               btn?.classList.add('animated')
             }
           }
         }
       })
     }
-  }, [GlobalState.locoScroll])
+  }, [DBStore.issues, ContentStore.issues.block])
 
   useEffect(() => {
-    if (DBStore.issues) {
-      setList(getList(letter))
+    const sortArr = DBStore.issues?.sort((a, b) =>
+      a.title.localeCompare(b.title),
+    )
+    let letter0 = 'A'
+    if (sortArr && sortArr.length) {
+      letter0 = sortArr[0].title[0].toUpperCase()
     }
-  }, [letter, DBStore.issues])
+    setLetter(letter0)
+  }, [DBStore.issues])
+
+  useEffect(() => {
+    if (!letter.length) return
+    setList(getList(letter))
+  }, [letter])
+
+  useEffect(() => {
+    if (window.innerWidth > 768) {
+      setTimeout(() => {
+        const items = document.querySelectorAll('.issues-list .issues__item')
+        const rows = document.querySelectorAll('.issues-list__row')
+
+        if (!rows) return
+        if (!items) return
+
+        rows.forEach((r) => r.classList.add('animated'))
+        items.forEach((i) => {
+          const observer = new window.IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) {
+                ;(i as any)?.classList.add('animated')
+              } else {
+                // ;(i as any)?.classList.remove('animated')
+              }
+            },
+            {
+              root: null,
+              threshold: 0.1,
+            },
+          )
+
+          observer.observe(i)
+        })
+      }, 100)
+    }
+  }, [DBStore.issues, ContentStore.issues.block])
+
+  useEffect(() => {
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        const items = document.querySelectorAll('.issues-list .issues__item')
+        const smooth = document.querySelector('.smooth')
+        const row = smooth!.querySelectorAll('.issues-list__row')
+        row.forEach((i) => i.classList.add('animated'))
+        items.forEach((i) => i.classList.add('animated'))
+      }, 200)
+    }
+  }, [letter, DBStore.issues, ContentStore.issues.block])
 
   useEffect(() => {
     setTimeout(() => {
-      if (GlobalState.locoScroll) {
-        const cont = document.querySelector('.issues-list')
-        if (!cont) return
-        const next = cont?.nextElementSibling
-        const list = document.querySelector('.issues-list__list')
-        const smooth = document.querySelector('.smooth')
-        const v2 = document.querySelector('.issues-list__vector')
-        var bodyRect = smooth!.getBoundingClientRect(),
-          listRect = list!.getBoundingClientRect(),
-          nextRect = next!.getBoundingClientRect(),
-          contRect = cont!.getBoundingClientRect()
-        var offset = listRect.top - bodyRect.top,
-          offsetBottom = nextRect.top - v2!.getBoundingClientRect().height
+      const cont = document.querySelector('.issues-list')
+      if (!cont) return
+      const next = cont?.nextElementSibling
+      const list = document.querySelector('.issues-list__list')
+      const smooth = document.querySelector('.smooth')
+      const v2 = document.querySelector('.issues-list__vector')
+      var bodyRect = smooth!.getBoundingClientRect(),
+        listRect = list!.getBoundingClientRect(),
+        nextRect = next!.getBoundingClientRect(),
+        contRect = cont!.getBoundingClientRect()
+      var offset = listRect.top - bodyRect.top,
+        offsetBottom = nextRect.top - v2!.getBoundingClientRect().height
 
-        GlobalState.locoScroll &&
-          GlobalState.locoScroll.on('scroll', (args: any) => {
-            if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-              ;(v2 as HTMLElement).style.transform = `translate3d(0, ${
-                args.scroll.y - offset
-              }px, 0)`
-            }
-          })
-      }
+      window.addEventListener('scroll', (args: any) => {
+        if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+          ;(v2 as HTMLElement).style.transform = `translate3d(0, ${
+            window.scrollY - offset
+          }px, 0)`
+        }
+      })
     }, 1000)
   }, [])
   if (!DBStore.issues) return <></>
 
-  if(!ContentStore.issues.block)return <></>
+  if (!ContentStore.issues.block) return <></>
+
+  const linksL = GlobalState.links
+  let issues = ''
+  if (linksL) {
+    issues = linksL.find((l: any) => l.id == 266).link
+  }
   return (
     <section className="issues-list">
       <div className="issues-list__top">
         <div style={{ overflow: 'hidden' }}>
-          <div className="issues-list__title" dangerouslySetInnerHTML={{__html:ContentStore.issues.block.title}}></div>
+          <div
+            className="issues-list__title"
+            dangerouslySetInnerHTML={{
+              __html: ContentStore.issues.block.title,
+            }}
+          ></div>
         </div>
         <Button
           text={
             <>
               {window.innerWidth > 768 ? <Setting /> : <MSetting />}
               {window.innerWidth > 768 && 'Filter'}
-              {-1 > 0 && <span>(2)</span>}
+              {window.innerWidth > 768 && GlobalState.filterCount ? (
+                <span>({GlobalState.filterCount})</span>
+              ) : (
+                <></>
+              )}
             </>
           }
-          click={() => {}}
+          click={changeTheraFilterState}
           classname="black-border p11p24 filter"
         />
       </div>
       <Letters
+        active={letter}
         data={DBStore.issues}
         change={(value) => {
           setLetter(value)
@@ -180,19 +259,22 @@ const IssuesList = observer(() => {
                 <h3 className="issues-list__letter">{l[0]}</h3>
                 <div className="issues-list__content">
                   {list.map((item: any, index: number) => (
-                    <Link
+                    <a
                       className="issues__item"
                       key={index}
-                      to={`/issue/${item.id}`}
+                      href={`${issues}/${item.link}`}
                     >
                       <Vector id={index} />
                       <div
                         className="issues__item-title"
                         dangerouslySetInnerHTML={{ __html: item.title }}
                       ></div>
-                      <div className="issues__item-text">{item.text}</div>
+                      <div
+                        className="issues__item-text"
+                        dangerouslySetInnerHTML={{ __html: item.text }}
+                      ></div>
                       <ArrowRight className="issues__item-arrow" />
-                    </Link>
+                    </a>
                   ))}
                 </div>
               </div>

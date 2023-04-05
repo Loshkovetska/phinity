@@ -2,10 +2,9 @@
   padding-top: 164px;
   position: relative;
 
-
   &__vector {
     position: absolute;
-    transition: 3s linear transform;
+    transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     right: -16px;
     @media (min-width: 1440px) {
       right: -80px;
@@ -14,7 +13,7 @@
       display: block;
     }
     &.mob {
-      transition: 2.5s linear transform;
+      transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
       display: none;
     }
   }
@@ -38,10 +37,9 @@
     line-height: 110%;
     color: #222426;
     margin-right: 130px;
-
   }
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -55,6 +53,8 @@
   &__list {
     display: flex;
     margin-top: calc(80px - 32px);
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   &__item {
@@ -65,9 +65,6 @@
     justify-content: center;
     margin: 32px 0 0;
     padding: 0 73px;
-    &:not(:last-child) {
-      border-right: 1px solid #222426;
-    }
   }
 
   @media (max-width: 1024px) {
@@ -100,12 +97,7 @@
       margin-top: 42px;
       height: 102px;
       width: calc(100% / 2);
-      &:not(:last-child) {
-        border-right: none;
-      }
-      &:nth-child(2n + 1) {
-        border-right: 1px solid #222426;
-      }
+  
     }
     &__list {
       flex-wrap: wrap;

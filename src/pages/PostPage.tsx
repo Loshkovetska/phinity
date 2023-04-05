@@ -1,36 +1,40 @@
-import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Reviews from '../components/pages/home/Reviews'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
+import { Suspense, useEffect, useRef, useState , lazy} from 'react'
+// import Reviews from '../components/pages/home/Reviews'
 import DBStore, {
   getReviews,
   getPosts,
   getVideos,
   getPost,
+  getPopularPosts,
+  getPopularVideos,
 } from '../stores/DBStore'
-import BookBlock from '../components/pages/home/BookBlock'
-import Videos from '../components/pages/blog/Videos'
-import PostContent from '../components/pages/post/PostContent'
-import RelatedPosts from '../components/pages/post/RelatedPosts'
+// import BookBlock from '../components/pages/home/BookBlock'
+// import Videos from '../components/pages/blog/Videos'
+// import PostContent from '../components/pages/post/PostContent'
+// import RelatedPosts from '../components/pages/post/RelatedPosts'
 import { useParams } from 'react-router'
 import { observer } from 'mobx-react'
-import { getMenu } from '../stores/ContentStore'
+import ContentStore, {
+  getBookBlock,
+  getHome,
+  getSinglePost,
+} from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import Layout from '../components/common/Layout'
+
+const Reviews = lazy(()=>import('../components/pages/home/Reviews'))
+const BookBlock = lazy(()=>import('../components/pages/home/BookBlock'))
+const Videos = lazy(()=>import('../components/pages/blog/Videos'))
+const PostContent = lazy(()=>import('../components/pages/post/PostContent'))
+const RelatedPosts = lazy(() => import('../components/pages/post/RelatedPosts'))
 
 const PostPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const { id: id } = useParams()
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const requestRef = useRef<any>(false)
+  const [loading, setLoading] = useState(true)
+  const { sub: id } = useParams()
+
+  
+
 
   useEffect(() => {
     if (!loading) {
@@ -41,44 +45,41 @@ const PostPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
+    if (requestRef.current) return
     getPosts()
     getReviews()
+    getReviewsIO()
+    getBookBlock()
+    getHome()
+    getPopularPosts()
+    getPopularVideos()
     getVideos()
-    getMenu()
-  }, [])
+    getPost(id!).then(() => {})
 
-  useEffect(() => {
-    getPost(+id!).then(() => {
-      document.title = `Phinity | ${DBStore.post?.title}`
+    getSinglePost(id!).then(() => {
+      setLoading(false)
     })
+    requestRef.current = true
   }, [])
 
   if (typeof window === 'undefined' || !window.document) {
     return <></>
   }
 
+  if (!DBStore.post) return <></>
+
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false}>
+          <Suspense fallback={<></>}>
             <PostContent />
-            <RelatedPosts />
-            <Videos />
-            {/* <Reviews /> */}
+            <RelatedPosts title={ContentStore.post.relatedTitle || ''} />
+            <Videos arr={DBStore.videos} dt={ContentStore.post.video} />
+            <Reviews dt={(ContentStore.post as any).reviews} />
             <BookBlock />
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+          </Suspense>
+        </Layout>
       )}
     </>
   )

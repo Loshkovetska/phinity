@@ -1,39 +1,44 @@
 import { useEffect, useRef, useState } from 'react'
-import Header from '../components/common/Header'
-import useLocoScroll from '../hooks/useLoco'
-import ScrollToTop from '../components/common/ScrollToTop'
-import Reviews from '../components/pages/home/Reviews'
-import Footer from '../components/common/Footer'
-import SearchBox from '../components/common/SearchBox'
-import {
+import DBStore, {
   getReviews,
   getPosts,
-  getCategories,
-  getTags,
   getVideos,
+  getPopularVideos,
+  getPopularPosts,
+  getBlogCategories,
+  filterPosts,
 } from '../stores/DBStore'
-import BookBlock from '../components/pages/home/BookBlock'
-import BlogContent from '../components/pages/blog/BlogContent'
-import Accreditation from '../components/pages/home/Accreditation'
-import Videos from '../components/pages/blog/Videos'
 import { observer } from 'mobx-react'
 import ContentStore, {
   getBlogContent,
   getBookBlock,
-  getMenu,
+  getHome,
 } from '../stores/ContentStore'
+import { getReviewsIO } from '../stores/GlobalState'
+import Filter from '../components/pages/therapists/Filter'
+import Layout from '../components/common/Layout'
+import { lazy, Suspense } from 'react'
+
+const BlogContent = lazy(() => import('../components/pages/blog/BlogContent'))
+const Reviews = lazy(() => import('../components/pages/home/Reviews'))
+const BookBlock = lazy(() => import('../components/pages/home/BookBlock'))
+const Footer = lazy(() => import('../components/common/Footer'))
+const Accreditation = lazy(() =>
+  import('../components/pages/home/Accreditation'),
+)
+const PopularPosts = lazy(() =>
+  import('../components/pages/video/PopularPosts'),
+)
+const PopularVideos = lazy(() =>
+  import('../components/pages/videos/PopularVideos'),
+)
 
 const BlogPage = observer(() => {
-  const [loading, setLoading] = useState(false)
-  const ref = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  useLocoScroll(!loading)
-  useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 0)
-  }, [])
+  const [showBottom, setShowBottom] = useState(false)
+  const [filter, setFilter] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const effectRef = useRef<any>(false)
+
   useEffect(() => {
     if (!loading) {
       if (typeof window === 'undefined' || !window.document) {
@@ -43,18 +48,25 @@ const BlogPage = observer(() => {
   }, [loading])
 
   useEffect(() => {
+    if (effectRef.current) return
+    getPopularVideos()
+    getPopularPosts()
+    getHome()
     getPosts()
     getReviews()
-    getCategories()
-    getTags()
+    getBlogCategories()
     getVideos()
-    getMenu()
     getBookBlock()
-
+    getReviewsIO()
     getBlogContent().then(() => {
-      document.title = `Phinity Therapy | ${ContentStore.blog.pageTitle}`
+      setLoading(false)
+      setTimeout(() => {
+        setShowBottom(true)
+      }, 2000)
     })
+    effectRef.current = true
   }, [])
+
   if (typeof window === 'undefined' || !window.document) {
     return <></>
   }
@@ -63,28 +75,49 @@ const BlogPage = observer(() => {
 
   return (
     <>
-      <div ref={ref}></div>
-      <ScrollToTop headerContent={ref} />
       {!loading && (
-        <div
-          className="smooth"
-          data-scroll
-          ref={containerRef}
-          data-load-container
-        >
-          <div className="container">
-            <Header />
+        <Layout withVideo={false} withFooter={false}>
+          <Suspense fallback={<></>}>
             <BlogContent />
-            <Videos />
-            <Reviews dt={ContentStore.blog.reviews} />
-            {window.innerWidth > 1024 && <BookBlock />}
-            <Accreditation accreditation={ContentStore.blog.accreditation} />
-            <div className="space-block"></div>
-            <Footer />
-            <SearchBox />
-          </div>
-        </div>
+            {showBottom && (
+              <>
+                <PopularPosts
+                  content={{
+                    title: ContentStore.blog.blogTitle,
+                    buttonTitle: ContentStore.blog.blogButton,
+                  }}
+                />
+                <PopularVideos content={ContentStore.blog.video} />
+                <Reviews dt={ContentStore.blog.reviews} />
+                {window.innerWidth > 1024 && <BookBlock />}
+                <Accreditation
+                  accreditation={ContentStore.blog.accreditation}
+                />
+                {window.innerWidth <= 1024 && <BookBlock />}
+                <div className="space-block"></div>
+                <Footer />
+              </>
+            )}
+          </Suspense>
+        </Layout>
       )}
+
+      <Filter
+        params={[{ title: 'Category', list: DBStore.postCategories }] || null}
+        setFilter={(value) => {
+          if (value == null) {
+            setFilter(null)
+            getPosts()
+          } else {
+            let st: any
+            ;[DBStore.postCategories]?.forEach((e: any, i: number) => {
+              st = value[`p${i}`]
+            })
+            setFilter(st)
+            filterPosts(st)
+          }
+        }}
+      />
     </>
   )
 })

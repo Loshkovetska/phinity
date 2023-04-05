@@ -1,4 +1,5 @@
 import { observable, runInAction } from 'mobx'
+import { DOMAIN } from '../mocks/doman'
 import searchRes from '../mocks/search'
 
 type GlobalType = {
@@ -8,14 +9,9 @@ type GlobalType = {
   locoScroll: any
   rating: any
   isTheraFilter: boolean
-  theraFilterCount: number
-  sortThera: {
-    jobCat: Array<any>
-    approach: Array<any>
-    exper: Array<any>
-    time: Array<any>
-    locate: Array<any>
-  }
+  filterCount: number
+  history: any
+  links: any
 }
 const GlobalState: GlobalType = observable({
   isMenuOpen: false,
@@ -24,17 +20,34 @@ const GlobalState: GlobalType = observable({
   locoScroll: null,
   rating: null,
   isTheraFilter: false,
-  theraFilterCount: 0,
-  sortThera: {
-    jobCat: Array(),
-    approach: Array(),
-    exper: Array(),
-    time: Array(),
-    locate: Array(),
-  },
+  filterCount: 0,
+  history: null,
+  links: null,
 })
 
 export default GlobalState
+
+export const getLinks = async () => {
+  const fd = new FormData()
+  fd.append('status', 'linkPage')
+
+  fetch(DOMAIN + 'react', {
+    method: 'POST',
+    body: fd,
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      let links = result.map((gl: any) => {
+        return {
+          ...gl,
+          link: gl.link,
+        }
+      })
+      runInAction(() => {
+        GlobalState.links = links
+      })
+    })
+}
 
 export const changeTheraFilterState = () => {
   runInAction(() => {
@@ -70,16 +83,16 @@ export const changeSearchState = () => {
 export const search = async (text: string) => {
   try {
     const fd = new FormData()
-    fd.append('text', text)
-    fd.append('status', 'search')
-    // let response = await fetch('/', {
-    //   method: 'POST',
-    //   body: new FormData(),
-    // })
+    fd.append('param1', text)
+    fd.append('status', 'poisk')
+    let response = await fetch(DOMAIN + 'react/', {
+      method: 'POST',
+      body: fd,
+    })
 
-    // let res = await response.json();
+    let res = await response.json()
     runInAction(() => {
-      GlobalState.search = searchRes
+      GlobalState.search = res
     })
   } catch (e) {
     console.log(e)
@@ -88,18 +101,19 @@ export const search = async (text: string) => {
 
 export const getReviewsIO = async () => {
   try {
-    // let response = await fetch(
-    //   'https://api.reviews.io/product/rating-batch?store=[STORE]&sku=SKUS;SEPERATED;BY;SEMI-COLON',
-    //   {
-    //     method: 'GET',
-    //   },
-    // )
+    let response = await fetch(
+      'https://api.reviews.io/merchant/reviews?store=phinity-therapy&sku=SKUS',
+      {
+        method: 'GET',
+      },
+    )
 
-    // let res = await response.json()
+    let res = await response.json()
+
     runInAction(() => {
       GlobalState.rating = {
-        average_rating: 4.5,
-        num_ratings: 10,
+        average_rating: res.stats.average_rating,
+        num_ratings: res.stats.total_reviews,
       }
     })
   } catch (e) {

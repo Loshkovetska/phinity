@@ -1,55 +1,85 @@
 import classNames from 'classnames'
 import { observer } from 'mobx-react'
 import { useEffect, useState } from 'react'
+import { isTouch } from '../../../mocks/mobile'
+import GlobalState from '../../../stores/GlobalState'
 
 const Letters = observer(
-  ({ data, change }: { data: any; change: (value: string) => void }) => {
-    const [letter, setLetter] = useState('A')
-    const letters = [
-      'A',
-      'B',
-      'C',
-      'D',
-      'E',
-      'F',
-      'G',
-      'H',
-      'I',
-      'J',
-      'K',
-      'L',
-      'M',
-      'N',
-      'O',
-      'P',
-      'Q',
-      'R',
-      'S',
-      'T',
-      'U',
-      'V',
-      'W',
-      'Y',
-      'Z',
-    ]
+  ({
+    data,
+    change,
+    active,
+  }: {
+    data: any
+    change: (value: string) => void
+    active: string
+  }) => {
+    const [letter, setLetter] = useState(active)
+    const [letters, setLetters] = useState(Array())
     useEffect(() => {
       change(letter)
     }, [letter])
+
+    useEffect(() => {
+      setLetter(active)
+    }, [active])
+
+    useEffect(() => {
+      const lets = document.querySelectorAll('.our-services__letter')
+      lets?.forEach((l) => l.classList.remove('active'))
+      letters?.forEach((l, i) => {
+        if (l == letter) {
+          lets?.forEach((l: any) => {
+            if (l.dataset.letter == letter) {
+              l.classList.add('active')
+            } else l.classList.remove('active')
+          })
+        }
+      })
+    }, [letter, letters])
+
+    useEffect(() => {
+      if (!data) return
+      let lts: any = []
+
+      data.forEach((element: any) => {
+        lts.push(element.title[0])
+      })
+      lts = lts.sort((a: any, b: any) => a.localeCompare(b))
+
+      setLetters(Array.from(new Set(lts)))
+
+      setTimeout(() => {
+        if (window.innerWidth <= 768) {
+          const smooth = document.querySelector('.smooth')
+          if (!smooth) return
+          const letters = smooth!.querySelectorAll('.our-services__letter')
+          if (!letters) return
+          letters.forEach((i, id) => {
+            if (!id) letters[id].classList.add('active')
+            ;(i as any).classList.add('animated')
+            ;(i as HTMLElement).style.transitionDelay = `${id / 8}s`
+          })
+        }
+      }, 300)
+    }, [data])
+
     return (
       <div className="our-services__letters">
-        {letters.map((l, i) => (
+        {letters?.map((l, i) => (
           <div
             className={classNames(
               'our-services__letter',
               l == 'A' && 'a',
               l == 'H' && 'h',
             )}
+            data-letter={l}
             key={i}
             onClick={() => {
-              setLetter(l)
-              const letters = document.querySelectorAll('.our-services__letter')
-              letters.forEach((l) => l.classList.remove('active'))
-              letters[i].classList.add('active')
+              if (!isTouch) setLetter(l)
+            }}
+            onTouchStart={() => {
+              if (isTouch) setLetter(l)
             }}
           >
             {l}

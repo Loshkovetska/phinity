@@ -7,35 +7,34 @@ import { useEffect } from 'react'
 import ContentStore from '../../../../stores/ContentStore'
 const ContactContent = observer(() => {
   useEffect(() => {
-    if (GlobalState.locoScroll) {
-      const smooth = document.querySelector('.smooth')
-      const issues = smooth!.querySelector('.contact-content')
-      const main = smooth!.querySelector('.contact-content__col.main'),
-        second = smooth!.querySelector('.contact-content__col.second')
-      const cols = smooth!.querySelectorAll('.contact-content__sub-col'),
-        bodyRect = smooth!.getBoundingClientRect().top,
-        elemRect = issues!.getBoundingClientRect().top,
-        offset = elemRect - bodyRect
+    const smooth = document.querySelector('.smooth')
+    const issues = smooth!.querySelector('.contact-content')
+    const main = smooth!.querySelector('.contact-content__col.main'),
+      second = smooth!.querySelector('.contact-content__col.second')
+    const cols = smooth!.querySelectorAll('.contact-content__sub-col'),
+      bodyRect = smooth!.getBoundingClientRect().top,
+      elemRect = issues!.getBoundingClientRect().top,
+      offset = elemRect - bodyRect
 
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y > offset - 500) {
-          issues?.classList.add('animated')
-          setTimeout(() => {
-            main?.classList.add('animated')
-          }, 500)
-          setTimeout(() => {
-            second?.classList.add('animated')
-          }, 1000)
-          setTimeout(() => {
-            cols.forEach((i, id) => {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > offset - 1000) {
+        issues?.classList.add('animated')
+        setTimeout(() => {
+          main?.classList.add('animated')
+        }, 500)
+        setTimeout(() => {
+          second?.classList.add('animated')
+        }, 1000)
+        setTimeout(() => {
+          cols.forEach((i, id) => {
+            setTimeout(() => {
               i?.classList.add('animated')
-              ;(i as HTMLDivElement).style.transitionDelay = `${id / 6}s`
-            })
-          }, 2000)
-        }
-      })
-    }
-  }, [GlobalState.locoScroll])
+            }, (id / 8) * 1000)
+          })
+        }, 1500)
+      }
+    })
+  }, [])
 
   useEffect(() => {
     if (window.innerWidth > 768) return
@@ -49,15 +48,14 @@ const ContactContent = observer(() => {
       offset = contRect.top - bodyRect.top,
       offsetBottom = contRect.bottom - contRect.height / 2
 
-    GlobalState.locoScroll &&
-      GlobalState.locoScroll.on('scroll', (args: any) => {
-        if (args.scroll.y >= offset && args.scroll.y <= offsetBottom) {
-          ;(vect as HTMLElement).style.transform = `translate3d(0, ${
-            args.scroll.y - offset
-          }px, 0)`
-        }
-      })
-  }, [GlobalState.locoScroll])
+    window.addEventListener('scroll', () => {
+      if (window.scrollY >= offset && window.scrollY <= offsetBottom) {
+        ;(vect as HTMLElement).style.transform = `translate3d(0, ${
+          window.scrollY - offset
+        }px, 0)`
+      }
+    })
+  }, [])
 
   if (!ContentStore.contact.content) return <></>
 
@@ -99,7 +97,9 @@ const ContactContent = observer(() => {
           ></div>
           <div className="contact-content__bottom">
             <Button
-              classname={window.innerWidth > 768 ? 'blue' : 'black-border'}
+              classname={
+                window.innerWidth > 768 ? 'blue f14' : 'black-border f14'
+              }
               text={ContentStore.contact.content.sheduleButton}
               click={() =>
                 (window.location.href = `tel:${ContentStore.contact.content.phone}`)
@@ -115,16 +115,24 @@ const ContactContent = observer(() => {
                 __html: ContentStore.contact.content.phoneTitle,
               }}
             ></div>
-            <div className="contact-content__text mb24 w328">
-              {ContentStore.contact.content.phoneText}
-            </div>
+            <div
+              className="contact-content__text mb24 w328"
+              dangerouslySetInnerHTML={{
+                __html: ContentStore.contact.content.phoneText,
+              }}
+            ></div>
 
-            <div className="contact-content__bold-text">
-              {ContentStore.contact.content.phone}
-            </div>
+            <div
+              className="contact-content__bold-text"
+              dangerouslySetInnerHTML={{
+                __html: ContentStore.contact.content.phone,
+              }}
+            ></div>
             <div className="contact-content__bottom">
               <Button
-                classname={window.innerWidth > 768 ? 'blue' : 'black-border'}
+                classname={
+                  window.innerWidth > 768 ? 'blue f14' : 'black-border f14'
+                }
                 text={ContentStore.contact.content.phoneButton}
                 click={() =>
                   (window.location.href = `tel:${ContentStore.contact.content.phone}`)
@@ -155,7 +163,9 @@ const ContactContent = observer(() => {
 
             <div className="contact-content__bottom">
               <Button
-                classname={window.innerWidth > 768 ? 'blue' : 'black-border'}
+                classname={
+                  window.innerWidth > 768 ? 'blue f14' : 'black-border f14'
+                }
                 text={ContentStore.contact.content.emailButton}
                 click={() =>
                   (window.location.href = `mailto:${ContentStore.contact.content.email}`)

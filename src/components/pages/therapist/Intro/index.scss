@@ -13,7 +13,7 @@
   &__vector {
     position: absolute;
     animation-duration: 20s;
-    animation-timing-function: linear;
+    animation-timing-function: ease;
     animation-iteration-count: infinite;
     animation-name: move;
     &.w31 {
@@ -78,12 +78,12 @@
     height: 100%;
     max-width: 1440px;
     margin: 28px auto 0;
+    padding: 32px 0;
   }
 
   &__col {
     width: 522px;
     max-width: 522px;
-    margin-left: 129px;
     display: flex;
     flex-direction: column;
 
@@ -93,20 +93,20 @@
     }
     &-bottom {
       display: flex;
-      align-items: flex-end;
+      /* align-items: flex-end; */
       flex-grow: 1;
-      margin-bottom: 24px;
+      margin-top: 48px;
     }
   }
 
   &__img {
-    margin: 58px 0 110px;
+    //margin: 58px 0 110px;
     width: 464px;
     min-width: 464px;
     height: 464px;
     position: relative;
     border-radius: 50%;
-    margin-left: 171px;
+    margin-left: 120px;
     img {
       width: 100%;
       height: 100%;
@@ -116,7 +116,7 @@
     svg {
       position: absolute;
       top: 0;
-      left: -50%;
+      right: -46%;
       z-index: -1;
       height: 100%;
     }
@@ -125,13 +125,12 @@
   }
 
   &__small-title {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Medium';
     font-style: normal;
     font-weight: 500;
     font-size: 18px;
     line-height: 120%;
     letter-spacing: 0.05em;
-    text-transform: uppercase;
     color: #222426;
     animation-duration: 0.5s;
     animation-delay: 1s;
@@ -145,18 +144,19 @@
     line-height: 110%;
     display: flex;
     flex-direction: column;
-    animation-duration: 1s;
-    animation-delay: 1.5s;
+
+    animation-duration: 0.5s;
+    animation-delay: 1s;
   }
 
   .button {
-    animation-duration: 0.5s;
-    animation-delay: 2.5s;
+    animation-duration: 1s;
+    animation-delay: 1.3s;
   }
 
   &__position {
     margin-top: 32px;
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 20px;
@@ -164,7 +164,20 @@
     color: #222426;
 
     opacity: 0.8;
+    animation-delay: 1.5s;
   }
+
+  .intro__widget {
+    animation-delay: 2s;
+    margin-top: 32px;
+
+    @media (max-width: 900px) {
+      .intro__widget-col {
+        align-items: center;
+      }
+    }
+  }
+
   @media (max-width: 1250px) {
     &__col {
       max-width: 480px;
@@ -212,9 +225,14 @@
 
   @media (max-width: 900px) {
     &__content {
-      flex-direction: column;
+      flex-direction: column-reverse;
       align-items: center;
       margin-top: 0;
+    }
+
+    .intro__widget {
+      animation-delay: 3s;
+      margin-top: 40px;
     }
 
     &__img {
@@ -233,6 +251,7 @@
       }
       &-bottom {
         margin-bottom: 0;
+        margin-top: 0;
       }
     }
 

@@ -1,4 +1,6 @@
 .therapists {
+  max-width: 1280px;
+  margin: 0 auto;
   padding-top: 140px;
   transition: 0.5s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95);
   opacity: 0;
@@ -8,6 +10,13 @@
     opacity: 1;
   }
 
+  .slick-dots {
+    opacity: 0;
+
+    &.animated {
+      opacity: 1;
+    }
+  }
   &__container {
     margin: 0 auto;
     position: relative;
@@ -21,7 +30,7 @@
     line-height: 110%;
     color: #222426;
     margin-bottom: 40px;
-    transition: 1.5s transform ease;
+    transition: 1s transform ease;
     transform-origin: bottom left;
     transform: rotate(-10deg) translate(0, -130%);
     &.animated {
@@ -42,7 +51,7 @@
   }
 
   &__text {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
@@ -52,30 +61,64 @@
     opacity: 0.8;
     max-width: 522px;
     transform: translateY(-140%);
-    transition: 0.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.5s;
+    transition: 0.5s transform cubic-bezier(0.45, 0.05, 0.55, 0.95) 1s;
     &.animated {
       transform: translateY(0);
     }
   }
 
   &__list {
+    margin: 0 auto;
     display: flex;
-    overflow: hidden;
-    @media (min-width: 1440px) {
-      margin-right: -80px;
+
+    @media (max-width: 1410px) {
+      width: 90%;
     }
-    margin-right: -16px;
+    &.list-row {
+      display: flex;
+      justify-content: center;
+      @media (max-width: 1410px) {
+        width: 100%;
+      }
+      .therapists__item {
+        margin-right: 0;
+
+        &.small {
+          width: 100%;
+          max-width: 305px;
+
+          @media (max-width: 1024px) {
+            max-width: 270px;
+
+            .therapists__item-img {
+              max-height: 350px;
+            }
+          }
+          &:not(:last-child) {
+            margin-right: 20px;
+          }
+        }
+
+        &:not(:last-child) {
+          margin-right: 0;
+        }
+      }
+    }
 
     .slider {
-      overflow: hidden;
       .button {
+        width: fit-content;
         margin-right: 0;
         position: absolute;
 
         @media (min-width: 1440px) {
-          right: 80px;
+          right: 0;
         }
-        right: 16px;
+        right: 0;
+
+        @media (max-width: 480px) {
+          width: 240px;
+        }
       }
 
       &__bottom {
@@ -86,28 +129,36 @@
   }
 
   &__more {
-    font-family: 'Montserrat';
+    font-family: 'Montserrat SemiBold';
     font-style: normal;
     font-weight: 600;
     font-size: 16px;
     line-height: 120%;
     display: flex;
     align-items: center;
-    text-transform: uppercase;
     cursor: pointer;
-    transition: 0.3s ease-in-out color;
+    color: #222426;
+    transition: 0.3s ease-out color;
 
     svg {
       margin-left: 8px;
-      path {
-        transition: 0.3s ease-in-out stroke;
-      }
+    }
+    position: relative;
+
+    &::after {
+      content: '';
+      width: 0;
+      height: 2px;
+      bottom: -8px;
+      position: absolute;
+      left: 0;
+      background: #222426;
+      transition: 0.5s ease-out all;
     }
 
     &:hover {
-      color: #0033cc;
-      path {
-        stroke: #0033cc;
+      &::after {
+        width: 100%;
       }
     }
   }
@@ -117,7 +168,7 @@
     align-items: center;
     margin-top: 56px;
     opacity: 0;
-    transition: 0.3s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.6s;
+    transition: 0.3s opacity cubic-bezier(0.45, 0.05, 0.55, 0.95) 1.7s;
     &.animated {
       opacity: 1;
     }
@@ -161,15 +212,13 @@
       font-weight: 500;
       font-size: 32px;
       line-height: 130%;
-
-      text-transform: uppercase;
       color: #222426;
       opacity: 0.8;
       margin-bottom: 8px;
     }
 
     &-text {
-      font-family: 'Montserrat';
+      font-family: 'Montserrat Regular';
       font-style: normal;
       font-weight: 400;
       font-size: 18px;
@@ -184,6 +233,10 @@
     min-width: 414px;
     margin-right: 123px;
     text-decoration: none;
+
+    .therapists__item-img {
+      max-height: 440px;
+    }
   }
 
   &__item-img {
@@ -191,11 +244,14 @@
   }
 
   &__item.small {
-    width: 305px;
+    min-width: 300px;
+    // width: 305px;
     text-decoration: none;
+    display: flex !important;
+    flex-direction: column;
 
-    min-width: 305px;
-    margin-right: 20px;
+    // min-width: 305px;
+    // margin-right: 20px;
     .therapists__item-info {
       padding: 16px 24px;
     }
@@ -211,6 +267,11 @@
       line-height: 160%;
     }
 
+    .therapists__item-img {
+      max-height: 408px;
+      display: flex;
+      flex-grow: 1;
+    }
     img {
       transition: 0.5s transform ease;
     }
@@ -222,7 +283,7 @@
       }
     }
     opacity: 0;
-    transition: 0.2s all ease-in;
+    transition: 0.5s all ease;
     &.animated {
       opacity: 1;
     }
@@ -239,7 +300,7 @@
         margin-right: 8px;
       }
     }
-    font-family: 'Montserrat';
+    font-family: 'Montserrat Regular';
     font-style: normal;
     font-weight: 400;
     font-size: 12px;
@@ -248,23 +309,50 @@
   }
 
   &__container.two {
-    overflow-y: clip;
+    .button {
+      opacity: 0;
+      transition: 0.3s ease-in-out all;
+
+      &.animated {
+        opacity: 1;
+      }
+    }
     .therapists__title {
       width: 100%;
-      text-align: center;
+      text-align: left;
       margin-bottom: 16px;
-      justify-content: center;
+      justify-content: flex-start;
       transform: rotate(-10deg) translate(0, -130%);
       &.animated {
         transform: rotate(0) translate3d(0, 0%, 0);
       }
     }
     .therapists__text {
-      text-align: center;
+      text-align: left;
       max-width: 665px;
       margin-bottom: 52px;
     }
+
+    .therapists__container-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
   }
+
+  // .slick-slide {
+  //   width: calc(305px + 20px);
+  //   min-width: calc(305px + 20px);
+  //   padding: 0 20px 0 0px;
+
+  //   &:last-child {
+  //     padding: 0 0px 0 0px;
+  //     width: calc(305px + 0px);
+  //     min-width: calc(305px + 0px);
+  //   }
+  // }
 
   @media (max-width: 1120px) {
     &__item.big {
@@ -285,10 +373,31 @@
       margin-right: 48px;
     }
     &__item.small {
-      width: 245px;
-      min-width: 245px;
-      margin-right: 8px;
+      // width: 245px;
+      // min-width: 245px;
+      // margin-right: 8px;
+
+      .therapists__item-img {
+        max-height: 538px;
+      }
     }
+
+    &__container.two {
+      .button {
+        margin: 32px auto 0;
+      }
+    }
+    // .slick-slide {
+    //   width: calc(245px + 8px);
+    //   min-width: calc(245px + 8px);
+    //   padding: 0 8px 0 0px;
+
+    //   &:last-child {
+    //     padding: 0 0px 0 0px;
+    //     width: calc(245px + 0px);
+    //     min-width: calc(245px + 0px);
+    //   }
+    // }
     &__item {
       &-info {
         padding: 16px 20px;
@@ -314,6 +423,12 @@
     }
   }
 
+  @media (max-width: 1023px) {
+    .therapists__list {
+      width: 100%;
+    }
+  }
+
   @media (max-width: 900px) {
     &__list {
       .slider__bottom {
@@ -334,7 +449,6 @@
       font-size: 30px;
       text-align: center;
       margin-bottom: 24px;
-      
     }
     &__text {
       text-align: center;
@@ -372,6 +486,10 @@
         width: 328px;
         min-width: 328px;
       }
+
+      &.small {
+        min-width: auto;
+      }
       &-info {
         padding: 24px;
       }
@@ -399,7 +517,7 @@
       top: -200px;
       left: -250px;
       transform: rotateY(180deg);
-      transition: 2.5s linear transform;
+      transition: 5s cubic-bezier(0.19, 1, 0.22, 1) transform;
     }
 
     &__text {
@@ -409,6 +527,10 @@
     &__item.small {
       .therapists__item-info {
         padding: 16px 24px;
+      }
+      .therapists__item-img {
+        height: auto;
+        max-height: 308px;
       }
     }
 
